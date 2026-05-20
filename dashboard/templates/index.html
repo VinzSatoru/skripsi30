@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sleep Disorder Risk Analyzer – XAI Dashboard</title>
+  <meta name="description" content="Dashboard analisis risiko gangguan tidur berbasis CatBoost dan SHAP Explainable AI" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║           NAVBAR                 ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="nav-icon">🌙</span>
+    <span class="nav-title">SleepRisk<span class="nav-accent">XAI</span></span>
+  </div>
+  <div class="nav-meta">
+    <span class="badge-algo">CatBoost</span>
+    <span class="badge-algo">SHAP</span>
+    <span id="model-accuracy-badge" class="badge-acc">Loading...</span>
+  </div>
+</nav>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║           HERO                   ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Explainable AI – Penelitian Skripsi</div>
+    <h1 class="hero-title">Analisis Risiko<br/><span class="gradient-text">Gangguan Tidur</span></h1>
+    <p class="hero-subtitle">
+      Masukkan data gaya hidup Anda. Model CatBoost akan memprediksi risiko gangguan tidur,
+      sementara SHAP akan menjelaskan <em>faktor apa yang paling berpengaruh</em> — secara transparan.
+    </p>
+    <div class="hero-stats">
+      <div class="stat-pill"><span>📊</span> 100K Data</div>
+      <div class="stat-pill"><span>🎯</span> Akurasi Tinggi</div>
+      <div class="stat-pill"><span>🔍</span> XAI Transparan</div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+</section>
+
+<!-- ╔══════════════════════════════════╗ -->
+<!-- ║           MAIN CONTENT           ║ -->
+<!-- ╚══════════════════════════════════╝ -->
+<main class="main-container">
+
+  <!-- ─── INPUT PANEL ─── -->
+  <section class="panel panel-input">
+    <div class="panel-header">
+      <div class="panel-icon">📋</div>
+      <div>
+        <h2 class="panel-title">Data Gaya Hidup</h2>
+        <p class="panel-subtitle">Isi seluruh kolom di bawah ini</p>
+      </div>
+      <button id="btn-sample" class="btn-outline">🎲 Isi Sampel Acak</button>
+    </div>
+
+    <form id="prediction-form">
+      <div id="form-fields-container">
+        <div class="loading-placeholder">
+          <div class="spinner"></div>
+          <p>Memuat form dari server…</p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" id="btn-reset" class="btn-secondary">↺ Reset</button>
+        <button type="button" id="btn-predict" class="btn-primary" disabled>
+          <span class="btn-text">🔬 Analisis Sekarang</span>
+          <span class="btn-loading" style="display:none">
+            <span class="spinner-sm"></span> Menganalisis...
+          </span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ─── RESULT PANEL ─── -->
+  <section class="panel panel-result" id="result-panel" style="display:none">
+    <div class="panel-header">
+      <div class="panel-icon">📊</div>
+      <div>
+        <h2 class="panel-title">Hasil Prediksi</h2>
+        <p class="panel-subtitle">Powered by CatBoost + SHAP</p>
+      </div>
+    </div>
+
+    <!-- Prediction Card -->
+    <div id="prediction-card" class="prediction-card">
+      <div class="pred-label">Tingkat Risiko Terdeteksi</div>
+      <div id="pred-result" class="pred-result">—</div>
+      <div id="pred-desc" class="pred-desc"></div>
+    </div>
+
+    <!-- Probability Bars -->
+    <div class="prob-section">
+      <h3 class="section-title">Probabilitas per Kelas</h3>
+      <div id="prob-bars" class="prob-bars"></div>
+    </div>
+
+    <!-- SHAP Chart -->
+    <div class="shap-section">
+      <h3 class="section-title">
+        Faktor Paling Berpengaruh
+        <span class="shap-legend">
+          <span class="legend-dot red"></span> Meningkatkan Risiko
+          <span class="legend-dot blue"></span> Menurunkan Risiko
+        </span>
+      </h3>
+      <p class="shap-info">
+        Grafik SHAP di bawah menunjukkan <strong>kontribusi masing-masing fitur gaya hidup</strong>
+        terhadap prediksi. Nilai positif = mendorong risiko naik; negatif = menurunkan risiko.
+      </p>
+      <div id="shap-chart" class="shap-chart"></div>
+    </div>
+
+    <!-- Interpretation -->
+    <div id="interpretation-box" class="interpretation-box"></div>
+  </section>
+
+  <!-- ─── INFO CARDS ─── -->
+  <section class="info-cards">
+    <div class="info-card">
+      <div class="info-icon">🐱</div>
+      <h3>CatBoost</h3>
+      <p>Algoritma <em>Gradient Boosting</em> yang mampu memproses fitur kategorikal secara native tanpa <em>encoding</em> manual, menghindari bias pada data gaya hidup.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🔍</div>
+      <h3>SHAP</h3>
+      <p><em>Shapley Additive exPlanations</em> — mengukur kontribusi setiap fitur secara adil berdasarkan teori permainan koalisi. Menghasilkan penjelasan lokal per individu.</p>
+    </div>
+    <div class="info-card">
+      <div class="info-icon">🎯</div>
+      <h3>XAI</h3>
+      <p><em>Explainable AI</em> menjawab "mengapa?" di balik prediksi model, memungkinkan tenaga kesehatan memahami dan mempercayai keputusan AI.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>🎓 Penelitian Skripsi — Implementasi XAI-SHAP pada CatBoost untuk Identifikasi Faktor Risiko Gangguan Tidur</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

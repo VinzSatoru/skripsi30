@@ -1,0 +1,283 @@
+{
+  "feature_names": [
+    "age",
+    "gender",
+    "occupation",
+    "bmi",
+    "country",
+    "sleep_duration_hrs",
+    "sleep_quality_score",
+    "rem_percentage",
+    "deep_sleep_percentage",
+    "sleep_latency_mins",
+    "wake_episodes_per_night",
+    "caffeine_mg_before_bed",
+    "alcohol_units_before_bed",
+    "screen_time_before_bed_mins",
+    "exercise_day",
+    "steps_that_day",
+    "nap_duration_mins",
+    "stress_score",
+    "work_hours_that_day",
+    "chronotype",
+    "mental_health_condition",
+    "heart_rate_resting_bpm",
+    "sleep_aid_used",
+    "shift_work",
+    "room_temperature_celsius",
+    "weekend_sleep_diff_hrs",
+    "season",
+    "day_type",
+    "cognitive_performance_score"
+  ],
+  "cat_features": [
+    "gender",
+    "occupation",
+    "country",
+    "chronotype",
+    "mental_health_condition",
+    "season",
+    "day_type"
+  ],
+  "classes": [
+    "Healthy",
+    "Mild",
+    "Moderate",
+    "Severe"
+  ],
+  "accuracy": 0.9458,
+  "feature_ranges": {
+    "age": {
+      "type": "numerical",
+      "min": 18.0,
+      "max": 69.0,
+      "mean": 34.70687,
+      "step": 1.0
+    },
+    "gender": {
+      "type": "categorical",
+      "options": [
+        "Female",
+        "Male",
+        "Other"
+      ]
+    },
+    "occupation": {
+      "type": "categorical",
+      "options": [
+        "Doctor",
+        "Driver",
+        "Freelancer",
+        "Homemaker",
+        "Lawyer",
+        "Manager",
+        "Nurse",
+        "Retired",
+        "Sales",
+        "Software Engineer",
+        "Student",
+        "Teacher"
+      ]
+    },
+    "bmi": {
+      "type": "numerical",
+      "min": 16.0,
+      "max": 45.0,
+      "mean": 26.289672999999997,
+      "step": 0.1
+    },
+    "country": {
+      "type": "categorical",
+      "options": [
+        "Australia",
+        "Brazil",
+        "Canada",
+        "France",
+        "Germany",
+        "India",
+        "Italy",
+        "Japan",
+        "Mexico",
+        "Netherlands",
+        "South Korea",
+        "Spain",
+        "Sweden",
+        "UK",
+        "USA"
+      ]
+    },
+    "sleep_duration_hrs": {
+      "type": "numerical",
+      "min": 3.0,
+      "max": 10.5,
+      "mean": 6.4239862,
+      "step": 0.1
+    },
+    "sleep_quality_score": {
+      "type": "numerical",
+      "min": 1.0,
+      "max": 10.0,
+      "mean": 4.871144,
+      "step": 0.1
+    },
+    "rem_percentage": {
+      "type": "numerical",
+      "min": 10.0,
+      "max": 30.0,
+      "mean": 20.243968000000002,
+      "step": 0.1
+    },
+    "deep_sleep_percentage": {
+      "type": "numerical",
+      "min": 5.0,
+      "max": 30.0,
+      "mean": 20.253375,
+      "step": 0.1
+    },
+    "sleep_latency_mins": {
+      "type": "numerical",
+      "min": 1.0,
+      "max": 58.0,
+      "mean": 19.83681,
+      "step": 1.0
+    },
+    "wake_episodes_per_night": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 8.0,
+      "mean": 3.34661,
+      "step": 1.0
+    },
+    "caffeine_mg_before_bed": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 400.0,
+      "mean": 38.8495,
+      "step": 1.0
+    },
+    "alcohol_units_before_bed": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 6.0,
+      "mean": 0.5968,
+      "step": 0.1
+    },
+    "screen_time_before_bed_mins": {
+      "type": "numerical",
+      "min": 2.0,
+      "max": 180.0,
+      "mean": 63.53962,
+      "step": 1.0
+    },
+    "exercise_day": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.45071,
+      "step": 1.0
+    },
+    "steps_that_day": {
+      "type": "numerical",
+      "min": 500.0,
+      "max": 20000.0,
+      "mean": 7496.85974,
+      "step": 1.0
+    },
+    "nap_duration_mins": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 116.0,
+      "mean": 14.93684,
+      "step": 1.0
+    },
+    "stress_score": {
+      "type": "numerical",
+      "min": 1.0,
+      "max": 10.0,
+      "mean": 5.733285,
+      "step": 0.1
+    },
+    "work_hours_that_day": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 18.0,
+      "mean": 7.134059000000001,
+      "step": 0.1
+    },
+    "chronotype": {
+      "type": "categorical",
+      "options": [
+        "Evening",
+        "Morning",
+        "Neutral"
+      ]
+    },
+    "mental_health_condition": {
+      "type": "categorical",
+      "options": [
+        "Anxiety",
+        "Both",
+        "Depression",
+        "Healthy"
+      ]
+    },
+    "heart_rate_resting_bpm": {
+      "type": "numerical",
+      "min": 45.0,
+      "max": 99.0,
+      "mean": 66.57017,
+      "step": 1.0
+    },
+    "sleep_aid_used": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.56161,
+      "step": 1.0
+    },
+    "shift_work": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.08442,
+      "step": 1.0
+    },
+    "room_temperature_celsius": {
+      "type": "numerical",
+      "min": 15.0,
+      "max": 28.0,
+      "mean": 20.538093,
+      "step": 0.1
+    },
+    "weekend_sleep_diff_hrs": {
+      "type": "numerical",
+      "min": -1.0,
+      "max": 3.0,
+      "mean": 1.2006339,
+      "step": 0.1
+    },
+    "season": {
+      "type": "categorical",
+      "options": [
+        "Autumn",
+        "Spring",
+        "Summer",
+        "Winter"
+      ]
+    },
+    "day_type": {
+      "type": "categorical",
+      "options": [
+        "Weekday",
+        "Weekend"
+      ]
+    },
+    "cognitive_performance_score": {
+      "type": "numerical",
+      "min": 0.0,
+      "max": 100.0,
+      "mean": 59.227295,
+      "step": 0.1
+    }
+  }
+}
