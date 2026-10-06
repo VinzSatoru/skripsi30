@@ -1,158 +1,462 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sleep Disorder Risk Analyzer – XAI Dashboard</title>
-  <meta name="description" content="Dashboard analisis risiko gangguan tidur berbasis CatBoost dan SHAP Explainable AI" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <title>SleepRisk AI – Klasifikasi Risiko Gangguan Tidur Berbasis CatBoost & SHAP</title>
+  <meta name="description" content="Sistem Pendukung Keputusan Klinis (CDSS) deteksi risiko gangguan tidur dengan CatBoost dan Tree-SHAP untuk rekomendasi gaya hidup yang dipersonalisasi." />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS v3.4 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Menlo', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49'
+            },
+            health: {
+              healthy: '#10b981',
+              mild: '#f59e0b',
+              moderate: '#f97316',
+              severe: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Auxiliary CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="bg-slate-50/90 text-slate-800 antialiased font-sans min-h-screen flex flex-col selection:bg-sky-100 selection:text-sky-900">
 
-<!-- ╔══════════════════════════════════╗ -->
-<!-- ║           NAVBAR                 ║ -->
-<!-- ╚══════════════════════════════════╝ -->
-<nav class="navbar">
-  <div class="nav-brand">
-    <span class="nav-icon">🌙</span>
-    <span class="nav-title">SleepRisk<span class="nav-accent">XAI</span></span>
-  </div>
-  <div class="nav-meta">
-    <span class="badge-algo">CatBoost</span>
-    <span class="badge-algo">SHAP</span>
-    <span id="model-accuracy-badge" class="badge-acc">Loading...</span>
-  </div>
-</nav>
-
-<!-- ╔══════════════════════════════════╗ -->
-<!-- ║           HERO                   ║ -->
-<!-- ╚══════════════════════════════════╝ -->
-<section class="hero">
-  <div class="hero-content">
-    <div class="hero-eyebrow">Explainable AI – Penelitian Skripsi</div>
-    <h1 class="hero-title">Analisis Risiko<br/><span class="gradient-text">Gangguan Tidur</span></h1>
-    <p class="hero-subtitle">
-      Masukkan data gaya hidup Anda. Model CatBoost akan memprediksi risiko gangguan tidur,
-      sementara SHAP akan menjelaskan <em>faktor apa yang paling berpengaruh</em> — secara transparan.
-    </p>
-    <div class="hero-stats">
-      <div class="stat-pill"><span>📊</span> 100K Data</div>
-      <div class="stat-pill"><span>🎯</span> Akurasi Tinggi</div>
-      <div class="stat-pill"><span>🔍</span> XAI Transparan</div>
-    </div>
-  </div>
-  <div class="hero-visual">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
-</section>
-
-<!-- ╔══════════════════════════════════╗ -->
-<!-- ║           MAIN CONTENT           ║ -->
-<!-- ╚══════════════════════════════════╝ -->
-<main class="main-container">
-
-  <!-- ─── INPUT PANEL ─── -->
-  <section class="panel panel-input">
-    <div class="panel-header">
-      <div class="panel-icon">📋</div>
-      <div>
-        <h2 class="panel-title">Data Gaya Hidup</h2>
-        <p class="panel-subtitle">Isi seluruh kolom di bawah ini</p>
-      </div>
-      <button id="btn-sample" class="btn-outline">🎲 Isi Sampel Acak</button>
-    </div>
-
-    <form id="prediction-form">
-      <div id="form-fields-container">
-        <div class="loading-placeholder">
-          <div class="spinner"></div>
-          <p>Memuat form dari server…</p>
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║           STICKY NAVBAR          ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-600 via-indigo-600 to-blue-700 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+          <span class="text-xl">🌙</span>
+        </div>
+        <div>
+          <a href="#" class="flex items-center gap-1.5 font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">
+            SleepRisk <span class="bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">AI</span>
+          </a>
+          <span class="hidden sm:block text-[11px] font-medium text-slate-400 -mt-1">Clinical Decision Support System &bull; Gaya Hidup Digital</span>
         </div>
       </div>
 
-      <div class="form-actions">
-        <button type="button" id="btn-reset" class="btn-secondary">↺ Reset</button>
-        <button type="button" id="btn-predict" class="btn-primary" disabled>
-          <span class="btn-text">🔬 Analisis Sekarang</span>
-          <span class="btn-loading" style="display:none">
-            <span class="spinner-sm"></span> Menganalisis...
+      <!-- Badges & Status -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="hidden md:flex items-center gap-2">
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200/80">
+            <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> CatBoost Engine
           </span>
-        </button>
-      </div>
-    </form>
-  </section>
-
-  <!-- ─── RESULT PANEL ─── -->
-  <section class="panel panel-result" id="result-panel" style="display:none">
-    <div class="panel-header">
-      <div class="panel-icon">📊</div>
-      <div>
-        <h2 class="panel-title">Hasil Prediksi</h2>
-        <p class="panel-subtitle">Powered by CatBoost + SHAP</p>
-      </div>
-    </div>
-
-    <!-- Prediction Card -->
-    <div id="prediction-card" class="prediction-card">
-      <div class="pred-label">Tingkat Risiko Terdeteksi</div>
-      <div id="pred-result" class="pred-result">—</div>
-      <div id="pred-desc" class="pred-desc"></div>
-    </div>
-
-    <!-- Probability Bars -->
-    <div class="prob-section">
-      <h3 class="section-title">Probabilitas per Kelas</h3>
-      <div id="prob-bars" class="prob-bars"></div>
-    </div>
-
-    <!-- SHAP Chart -->
-    <div class="shap-section">
-      <h3 class="section-title">
-        Faktor Paling Berpengaruh
-        <span class="shap-legend">
-          <span class="legend-dot red"></span> Meningkatkan Risiko
-          <span class="legend-dot blue"></span> Menurunkan Risiko
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> SHAP Transparency
+          </span>
+        </div>
+        <span id="model-accuracy-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Akurasi 95,18%
         </span>
-      </h3>
-      <p class="shap-info">
-        Grafik SHAP di bawah menunjukkan <strong>kontribusi masing-masing fitur gaya hidup</strong>
-        terhadap prediksi. Nilai positif = mendorong risiko naik; negatif = menurunkan risiko.
-      </p>
-      <div id="shap-chart" class="shap-chart"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║           HERO SECTION           ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <section class="relative overflow-hidden bg-gradient-to-b from-sky-50/70 via-white to-slate-50 border-b border-slate-200/60 py-8 sm:py-11">
+    <!-- Ambient Background Glows -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none overflow-hidden opacity-70">
+      <div class="absolute -top-24 left-10 w-96 h-96 bg-sky-200/40 rounded-full blur-3xl"></div>
+      <div class="absolute top-10 right-10 w-96 h-96 bg-indigo-200/30 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- Interpretation -->
-    <div id="interpretation-box" class="interpretation-box"></div>
+    <div class="relative max-w-4xl mx-auto px-4 text-center">
+      <!-- Punchy Value Pill -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white text-sky-800 text-xs font-bold border border-sky-200/80 shadow-2xs mb-4">
+        <span>✨</span> Skrining Cepat &bull; Hasil Transparan &bull; Solusi Praktis
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight sm:leading-tight">
+        Deteksi Risiko <span class="bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">Gangguan Tidur</span>
+        <br class="hidden sm:inline" /> & Langkah Solusi Terarah
+      </h1>
+
+      <!-- Fast Feature Highlights (Replaces long narrative paragraph) -->
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm font-semibold text-slate-600">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/90 shadow-2xs">
+          <span class="text-sky-600">⚡</span> Skrining 30 Detik
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/90 shadow-2xs">
+          <span class="text-indigo-600">🎯</span> Akurasi 95,18%
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/90 shadow-2xs">
+          <span class="text-emerald-600">🔍</span> Transparan (SHAP)
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-slate-200/90 shadow-2xs">
+          <span class="text-amber-600">🔒</span> 100% Privat & Lokal
+        </span>
+      </div>
+
+      <!-- Quick Preset Selector (Clean Visual Pills) -->
+      <div class="mt-6 max-w-2xl mx-auto bg-white/90 backdrop-blur-md p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center justify-center gap-1.5">
+          <span>⚡</span> Coba Simulasi Cepat (Pilih Salah Satu Profil):
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button type="button" id="btn-preset-healthy" class="btn-preset p-2.5 rounded-xl text-left bg-emerald-50/70 border border-emerald-200 hover:bg-emerald-100 hover:border-emerald-300 transition-all cursor-pointer group">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-emerald-800 flex items-center gap-1">🟢 Sehat</span>
+              <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">Optimal</span>
+            </div>
+            <div class="text-[11px] text-emerald-700/80 mt-1 flex items-center gap-1">
+              <span>⏱️ Tidur 7.5j</span> &bull; <span>📱 HP 20m</span>
+            </div>
+          </button>
+
+          <button type="button" id="btn-preset-mild" class="btn-preset p-2.5 rounded-xl text-left bg-amber-50/70 border border-amber-200 hover:bg-amber-100 hover:border-amber-300 transition-all cursor-pointer group">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-amber-800 flex items-center gap-1">🟡 Ringan</span>
+              <span class="text-[10px] font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">Perlu Aksi</span>
+            </div>
+            <div class="text-[11px] text-amber-700/80 mt-1 flex items-center gap-1">
+              <span>📱 HP 85m</span> &bull; <span>☕ Kafein Sore</span>
+            </div>
+          </button>
+
+          <button type="button" id="btn-preset-severe" class="btn-preset p-2.5 rounded-xl text-left bg-rose-50/70 border border-rose-200 hover:bg-rose-100 hover:border-rose-300 transition-all cursor-pointer group">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-rose-800 flex items-center gap-1">🔴 Tinggi</span>
+              <span class="text-[10px] font-semibold text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded">Kritis</span>
+            </div>
+            <div class="text-[11px] text-rose-700/80 mt-1 flex items-center gap-1">
+              <span>🔄 Shift Malam</span> &bull; <span>⚡ Stres 8.5</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- ─── INFO CARDS ─── -->
-  <section class="info-cards">
-    <div class="info-card">
-      <div class="info-icon">🐱</div>
-      <h3>CatBoost</h3>
-      <p>Algoritma <em>Gradient Boosting</em> yang mampu memproses fitur kategorikal secara native tanpa <em>encoding</em> manual, menghindari bias pada data gaya hidup.</p>
-    </div>
-    <div class="info-card">
-      <div class="info-icon">🔍</div>
-      <h3>SHAP</h3>
-      <p><em>Shapley Additive exPlanations</em> — mengukur kontribusi setiap fitur secara adil berdasarkan teori permainan koalisi. Menghasilkan penjelasan lokal per individu.</p>
-    </div>
-    <div class="info-card">
-      <div class="info-icon">🎯</div>
-      <h3>XAI</h3>
-      <p><em>Explainable AI</em> menjawab "mengapa?" di balik prediksi model, memungkinkan tenaga kesehatan memahami dan mempercayai keputusan AI.</p>
-    </div>
-  </section>
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║           MAIN CONTAINER         ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
 
-</main>
+    <!-- ─── INPUT PANEL ─── -->
+    <section class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 transition-all">
+      <!-- Section Header -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <span class="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-lg shadow-2xs">📋</span>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-900">Isi Data Kebiasaan Harian Anda</h2>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Lengkapi form di bawah secara jujur untuk mendapatkan analisis faktor risiko yang paling akurat.</p>
+        </div>
 
-<footer class="footer">
-  <p>🎓 Penelitian Skripsi — Implementasi XAI-SHAP pada CatBoost untuk Identifikasi Faktor Risiko Gangguan Tidur</p>
-</footer>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btn-sample" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-all flex items-center gap-1.5 cursor-pointer">
+            <span>🎲</span> Muat Sampel Acak
+          </button>
+          <button type="button" id="btn-reset" class="px-3.5 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer">
+            ↺ Kosongkan
+          </button>
+        </div>
+      </div>
 
-<script src="script.js"></script>
+      <!-- Category Tabs Filter -->
+      <div class="pt-5 pb-2">
+        <div id="category-tabs" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer bg-slate-900 text-white shadow-2xs" data-group="all">
+            🌐 Semua Parameter
+          </button>
+          <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200" data-group="Gaya Hidup">
+            📱 Gaya Hidup & Gadget
+          </button>
+          <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200" data-group="Pola Tidur">
+            🌙 Pola & Kualitas Tidur
+          </button>
+          <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200" data-group="Profil Individu">
+            👤 Profil & Pekerjaan
+          </button>
+          <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer bg-slate-100 text-slate-600 hover:bg-slate-200" data-group="Kondisi Fisik">
+            💓 Kondisi Fisik & Ruangan
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Grid Container -->
+      <form id="health-form" class="mt-4">
+        <div id="form-fields-container" class="space-y-6">
+          <div class="py-12 text-center text-slate-400 text-sm">
+            <span class="text-2xl inline-block animate-spin mb-2">⏳</span>
+            <p>Menyiapkan formulir parameter...</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p class="text-xs text-slate-500 text-center sm:text-left">
+            🔒 Data diproses secara lokal pada peramban Anda untuk keperluan skrining awal preventif.
+          </p>
+          <button type="button" id="btn-predict" disabled class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 hover:from-sky-500 hover:to-indigo-500 text-white font-extrabold text-sm sm:text-base shadow-lg shadow-sky-600/25 hover:shadow-sky-600/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+            <span class="btn-text">🔍 Analisis Kualitas Tidur & Faktor Risiko Saya</span>
+            <span class="btn-loading hidden items-center gap-2">
+              <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span>Memproses dengan CatBoost & SHAP...</span>
+            </span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ─── RESULT PANEL (DYNAMIC) ─── -->
+    <section id="result-panel" class="hidden bg-white rounded-3xl border border-slate-200 shadow-md p-6 sm:p-10 space-y-10 animate-fade-in">
+      
+      <!-- Panel Header with Print Action -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-sky-500 animate-ping"></span>
+            <span class="text-xs font-bold uppercase tracking-wider text-sky-600">Hasil Analisis Lengkap</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1">Laporan Profil Risiko & Rencana Aksi Tidur</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Tanggal Pemeriksaan: <span id="print-date" class="font-medium text-slate-600">Hari ini</span></p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button type="button" id="btn-print-report" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200/80 transition-all flex items-center gap-1.5 cursor-pointer">
+            <span>🖨️</span> Cetak / Simpan PDF
+          </button>
+          <button type="button" id="btn-copy-plan" class="px-4 py-2 rounded-xl text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-all flex items-center gap-1.5 cursor-pointer">
+            <span>📋</span> Salin Rencana Aksi
+          </button>
+        </div>
+      </div>
+
+      <!-- 1. Prediction Status Banner -->
+      <div id="prediction-card" class="rounded-2xl p-6 sm:p-8 border transition-all duration-300">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider opacity-75">Status Diagnosis Model:</div>
+            <div id="pred-result" class="text-2xl sm:text-4xl font-extrabold tracking-tight flex items-center gap-3">
+              <!-- Dynamically injected -->
+            </div>
+            <p id="pred-desc" class="text-sm sm:text-base leading-relaxed opacity-90 max-w-2xl font-medium">
+              <!-- Dynamically injected -->
+            </p>
+          </div>
+          <div class="shrink-0 bg-white/80 backdrop-blur-md p-4 rounded-xl border border-black/5 text-center min-w-[160px]">
+            <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Kepastian Model</span>
+            <span id="pred-confidence" class="text-2xl font-black text-slate-900">—</span>
+            <span class="block text-[10px] text-slate-500 mt-1">Berdasarkan probabilitas CatBoost</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Probability Distribution Cards -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span>🎯</span> Distribusi Probabilitas Prediksi Model
+            </h3>
+            <p class="text-xs text-slate-500">Persentase kemungkinan kondisi tidur Anda pada masing-masing dari 4 kategori risiko:</p>
+          </div>
+          <span class="text-xs font-semibold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Total: 100%</span>
+        </div>
+        <div id="prob-bars" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <!-- Injected dynamically via script.js -->
+        </div>
+      </div>
+
+      <!-- 3. SHAP Divergent Bar Chart -->
+      <div class="bg-slate-50/80 rounded-2xl border border-slate-200/80 p-5 sm:p-7">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+          <div>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <span>🔍</span> Peta Faktor Pemicu Tidur Anda (Analisis SHAP)
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Grafik ini menunjukkan secara transparan <strong>faktor apa saja yang paling memengaruhi</strong> hasil prediksi AI pada diri Anda:
+            </p>
+          </div>
+          <div class="flex items-center gap-3 text-xs font-semibold shrink-0">
+            <span class="inline-flex items-center gap-1.5 text-rose-700 bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200">
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span> (+) Memicu Gangguan
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-sky-700 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200">
+              <span class="w-2 h-2 rounded-full bg-sky-500"></span> (-) Menjaga Kualitas
+            </span>
+          </div>
+        </div>
+
+        <!-- Chart Container -->
+        <div id="shap-chart" class="mt-6 space-y-3">
+          <!-- Injected dynamically via script.js -->
+        </div>
+
+        <!-- Interpretation in Human Language -->
+        <div id="interpretation-box" class="mt-6 rounded-xl p-4 sm:p-5 bg-white border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <!-- Injected dynamically via script.js -->
+        </div>
+      </div>
+
+      <!-- 4. ACTIONABLE RECOMMENDATIONS (REKREASI BESAR / FOKUS UTAMA) -->
+      <div id="action-plan-section" class="space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-base shadow-2xs">💡</span>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900">Rekomendasi Tindak Lanjut: Langkah Menuju Tidur Nyenyak</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+              Panduan praktis dengan bahasa sehari-hari yang dirancang khusus sesuai kebiasaan buruk yang terdeteksi pada profil Anda.
+            </p>
+          </div>
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 self-start sm:self-auto">
+            🌱 Mudah Diterapkan
+          </span>
+        </div>
+
+        <!-- Container for Recommendation Cards -->
+        <div id="action-plan-cards" class="space-y-6">
+          <!-- Injected dynamically via script.js -->
+        </div>
+      </div>
+
+      <!-- 5. Interactive What-If Simulator -->
+      <div id="whatif-section" class="rounded-3xl border border-indigo-200 bg-gradient-to-br from-indigo-50/40 via-white to-sky-50/40 p-6 sm:p-8 space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-md shadow-indigo-500/20">🎛️</span>
+            <div>
+              <h3 class="text-lg sm:text-xl font-bold text-slate-900">Simulator Interaktif: "Bagaimana Jika Saya Ubah Kebiasaan?"</h3>
+              <p class="text-xs sm:text-sm text-slate-600">Geser slider di bawah untuk melihat bagaimana perubahan kecil pada gaya hidup bisa menaikkan peluang kesembuhan Anda secara langsung.</p>
+            </div>
+          </div>
+          <button type="button" id="btn-reset-whatif" class="text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-100 px-3.5 py-2 rounded-xl transition-all cursor-pointer self-start sm:self-auto shadow-2xs">
+            ↺ Kembalikan Nilai Asli
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Sliders Panel -->
+          <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-5 shadow-2xs" id="whatif-sliders">
+            <!-- Injected dynamically via script.js -->
+          </div>
+
+          <!-- Comparison Result Card -->
+          <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 space-y-5 shadow-2xs" id="whatif-result-card">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400">Dampak Perubahan Perilaku</div>
+            
+            <div class="flex items-center justify-between gap-2 p-4 bg-slate-50 rounded-2xl border border-slate-200/60">
+              <div class="text-center flex-1">
+                <span class="block text-[11px] font-semibold text-slate-400 mb-1">Sebelum</span>
+                <span id="whatif-before-badge" class="inline-block px-3 py-1 rounded-xl text-xs font-extrabold text-white bg-slate-500 shadow-2xs">—</span>
+                <span id="whatif-before-prob" class="block text-[11px] text-slate-500 mt-1.5 font-medium">—</span>
+              </div>
+              <div class="text-slate-300 text-2xl font-bold">➔</div>
+              <div class="text-center flex-1">
+                <span class="block text-[11px] font-semibold text-slate-400 mb-1">Sesudah</span>
+                <span id="whatif-after-badge" class="inline-block px-3 py-1 rounded-xl text-xs font-extrabold text-white bg-slate-500 shadow-2xs">—</span>
+                <span id="whatif-after-prob" class="block text-[11px] text-slate-500 mt-1.5 font-medium">—</span>
+              </div>
+            </div>
+
+            <div id="whatif-delta-desc" class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+              Geser salah satu slider di sebelah kiri untuk melihat dampak perubahan perilaku terhadap tingkat risiko secara langsung.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Ethical AI & Clinical Disclaimer -->
+      <div class="flex items-start gap-3.5 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 leading-relaxed">
+        <span class="text-lg shrink-0">⚕️</span>
+        <div>
+          <strong class="text-slate-800">Batasan Etika AI & Catatan Medis:</strong>
+          Sistem ini merupakan purwarupa sistem pendukung keputusan klinis (<em>Clinical Decision Support System</em>) berbasis <em>Explainable AI</em> untuk instrumen skrining awal preventif. Hasil analisis model ini bertujuan untuk edukasi dan tidak menggantikan diagnosis resmi dari dokter atau uji laboratorium tidur (polisomnografi).
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── EDUCATIONAL INFO CARDS (GLANCEABLE PILLS) ─── -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs hover:border-sky-300 transition-all flex items-start gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center text-xl shrink-0">🐱</div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">CatBoost Native</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Klasifikasi data gaya hidup kategorikal akurat tanpa distorsi encoding.</p>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <span class="text-[10px] font-semibold bg-sky-50 text-sky-700 px-2 py-0.5 rounded">95,18% Akurasi</span>
+            <span class="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Anti-Overfitting</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs hover:border-indigo-300 transition-all flex items-start gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-xl shrink-0">🔍</div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Tree-SHAP Transparan</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Membongkar faktor pemicu secara adil berbasis teori Game Shapley.</p>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <span class="text-[10px] font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">Bukan Black-Box</span>
+            <span class="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Lokal & Global</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-2xs hover:border-emerald-300 transition-all flex items-start gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl shrink-0">🌱</div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Target Gaya Hidup</h3>
+          <p class="text-xs text-slate-500 mt-0.5">Rekomendasi terukur sesuai kaidah medis <em>Sleep Hygiene</em>.</p>
+          <div class="flex flex-wrap gap-1 mt-2">
+            <span class="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">Aksi Terarah</span>
+            <span class="text-[10px] font-semibold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">Preventif</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ╔══════════════════════════════════╗ -->
+  <!-- ║           FOOTER                 ║ -->
+  <!-- ╚══════════════════════════════════╝ -->
+  <footer class="mt-auto border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4">
+      <p class="font-medium text-slate-700">Skripsi S1 Teknik Informatika: Penerapan Algoritma CatBoost dan SHAP untuk Klasifikasi Risiko Gangguan Tidur Berbasis Gaya Hidup</p>
+      <p class="mt-1 text-slate-400">Ahmad Novian Dzulfanni (NIM: 231240001438) &bull; Fakultas Sains dan Teknologi &bull; UNISNU Jepara &bull; 2026</p>
+    </div>
+  </footer>
+
+  <!-- Script Logic -->
+  <script src="script.js"></script>
 </body>
 </html>

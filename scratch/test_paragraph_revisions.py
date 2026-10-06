@@ -1,0 +1,44 @@
+import docx
+import shutil
+
+shutil.copy2("PROPOSAL BAB 1-3.docx", "temp_inspect_proposal.docx")
+with open("temp_inspect_proposal.docx", "rb") as f:
+    doc = docx.Document(f)
+
+# P[34] in Bab 2:
+# Original:
+# Kualitas tidur yang memadai merupakan salah satu pilar biologis yang sangat fundamental dalam menjaga stabilitas sistem fisiologis dan psikologis manusia. Berbagai studi klinis skala luas telah membuktikan bahwa durasi tidur yang tidak mencukupi serta pola istirahat yang terganggu secara berkepanjangan berkaitan langsung dengan peningkatan risiko penyakit metabolik, hipertensi, hingga kematian dini (Windred et al., 2024). Dampak penurunan kualitas tidur ini terasa semakin parah ketika menyerang individu yang sebelumnya telah menderita penyakit komorbiditas kronis, di mana keluhan insomnia sering kali memperburuk prognosis medis pasien (Das et al., 2025). Mengingat keterbatasan metode diagnosis fisik di laboratorium rumah sakit yang membutuhkan biaya besar serta waktu tunggu lama, deteksi dini berbasis analisis faktor risiko kini diposisikan sebagai langkah pencegahan paling strategis dalam dunia kesehatan masyarakat (Wang et al., 2025).
+# Words: 125.
+# Let's adjust to include (Medic et al., 2017):
+p34_text = "Kualitas tidur yang memadai merupakan salah satu pilar biologis esensial dalam menjaga stabilitas homeostasis fisiologis dan psikologis manusia (Medic et al., 2017). Berbagai studi klinis skala luas membuktikan bahwa durasi tidur yang tidak mencukupi serta pola istirahat yang terganggu secara berkepanjangan berkaitan erat dengan peningkatan risiko penyakit metabolik, hipertensi, hingga mortalitas dini (Windred et al., 2024). Dampak degradasi kualitas tidur terasa semakin parah ketika menyerang individu yang menderita komorbiditas kronis, di mana insomnia memperburuk prognosis medis pasien (Das et al., 2025). Mengingat keterbatasan uji laboratorium rumah sakit yang membutuhkan biaya besar dan waktu lama, deteksi dini berbasis analisis faktor risiko diposisikan sebagai langkah preventif paling strategis dalam kesehatan masyarakat (Wang et al., 2025)."
+print(f"P[34] word count: {len(p34_text.split())} words")
+
+# P[36] in Bab 2:
+# Replace (Hapsari et al., 2024) with (Widayati, 2024):
+# Original:
+# Selain dampak fisiologis akibat paparan radiasi layar gawai, interaksi digital yang konstan juga melahirkan tekanan psikologis baru yang dikenal luas sebagai technostress. Tuntutan untuk selalu merespons pesan kerja, paparan informasi tanpa henti, serta ketakutan tertinggal informasi (FOMO) menciptakan kondisi kewaspadaan mental berlebihan yang menghambat ketenangan pikiran sebelum terlelap (Hapsari et al., 2024). Tekanan psikososial ini kemudian berpadu dengan kebiasaan gaya hidup yang buruk, seperti konsumsi kafein berlebih dan waktu istirahat yang tidak teratur, sehingga memperparah siklus gangguan tidur harian (Henrich et al., 2021). Untuk memutus lingkaran masalah tersebut, prinsip kebersihan tidur (Sleep Hygiene) digunakan sebagai pedoman klinis guna menata ulang pola perilaku individu. Menghubungkan metrik gaya hidup digital dengan pedoman kebersihan tidur ini menjadi dasar perancangan intervensi preventif yang terarah.
+# Words: 120.
+p36_text = "Selain dampak fisiologis akibat paparan radiasi layar gawai, interaksi digital yang konstan melahirkan tekanan psikologis baru yang dikenal luas sebagai fenomena technostress. Tuntutan merespons pesan kerja, paparan informasi tanpa jeda, serta kecemasan tertinggal informasi digital menciptakan kewaspadaan mental berlebih yang menghambat ketenangan pikiran menjelang tidur (Widayati, 2024). Tekanan psikososial ini berpadu dengan kebiasaan hidup yang buruk, seperti konsumsi kafein berlebih dan jadwal tidur tidak teratur, sehingga memperburuk siklus gangguan tidur (Henrich et al., 2021). Guna memutus lingkaran persoalan tersebut, prinsip kebersihan tidur (Sleep Hygiene) digunakan sebagai pedoman klinis untuk merekonstruksi pola perilaku individu. Menghubungkan metrik gaya hidup digital dengan pedoman kebersihan tidur menjadi fondasi penting dalam menyusun rekomendasi intervensi preventif terarah."
+print(f"P[36] word count: {len(p36_text.split())} words")
+
+# P[39] in Bab 2:
+# Include Mawardi et al. (2025) and Taher & Ayon (2024):
+# Original words: 125.
+p39_text = "Untuk meningkatkan ketelitian klasifikasi pada data kesehatan yang memiliki variasi tinggi, pendekatan pembelajaran gabungan atau ensemble learning menjadi paradigma utama yang banyak diadopsi para peneliti saat ini. Metode ini bekerja dengan cara mengintegrasikan sekumpulan model dasar (base learners) guna menghasilkan satu kesatuan model prediksi akhir yang memiliki akurasi serta stabilitas performa yang jauh lebih unggul (Kaya, 2025). Salah satu teknik boosting paling tangguh adalah Gradient Boosted Decision Trees (GBDT), yang menyusun pohon keputusan berurutan untuk meminimalkan fungsi kerugian melalui optimasi gradien (Taher & Ayon, 2024). Keunggulan arsitektur boosting dalam memetakan risiko tidur terbukti mengungguli model konvensional pada evaluasi data gaya hidup (Mawardi et al., 2025). Melalui mekanisme iteratif berkesinambungan ini, algoritma ensemble mampu memetakan batas keputusan multivariat kompleks secara efektif dan andal."
+print(f"P[39] word count: {len(p39_text.split())} words")
+
+# P[49] in Bab 2:
+# Include Bhattarai et al. (2024) and Zhang et al. (2025):
+# Original words: 122.
+p49_text = "Kendati nilai Shapley memiliki landasan matematis yang sangat solid, perhitungan eksak pada model non-linier konvensional memiliki kompleksitas komputasi eksponensial yang membutuhkan waktu sangat lama. Untuk memecahkan kendala efisiensi tersebut, Lundberg et al. (2020) merumuskan algoritma Tree-SHAP, sebuah varian algoritma khusus yang mengoptimalkan penghitungan nilai Shapley pada model berbasis pohon seperti CatBoost dalam waktu polinomial. Algoritma Tree-SHAP mengevaluasi struktur pohon keputusan secara terpadu tanpa memerlukan proses penyampelan acak berulang kali. Luaran nilai Tree-SHAP dapat direpresentasikan secara intuitif melalui grafik ringkasan (summary plot) untuk interpretasi populasi global, serta grafik gaya dorong (waterfall plot) untuk membedah kontribusi fitur individual per pasien (Zhang et al., 2025; Bhattarai et al., 2024). Visualisasi ini memberikan wawasan yang sangat transparan dan mudah dipahami tenaga medis dalam merumuskan intervensi klinis."
+print(f"P[49] word count: {len(p49_text.split())} words")
+
+# P[67] in Bab 3:
+# Replace (Martinez-Plumed et al., 2022; Lamaakal et al., 2025) with (Martínez-Plumed et al., 2021; Schröer et al., 2021):
+p67_text = "Pendekatan penelitian yang digunakan dalam skripsi ini mengadopsi kerangka kerja standar industri CRISP-DM (Cross-Industry Standard Process for Data Mining). Kerangka kerja ini dipilih secara khusus karena menyediakan metodologi yang sangat sistematis, terstruktur, dan bersifat iteratif untuk memandu seluruh siklus pengembangan proyek penambangan data dan pembelajaran mesin. Standar CRISP-DM terdiri atas enam tahapan utama yang saling berkesinambungan, yaitu pemahaman kebutuhan masalah (business understanding), pemahaman data awal (data understanding), persiapan data (data preparation), pemodelan algoritma (modeling), evaluasi performa model (evaluation), serta penyebaran hasil temuan (deployment). Penerapan metodologi komprehensif ini menjamin setiap tahapan teknis terhubung secara konsisten dengan tujuan klinis, sehingga proses rekayasa fitur dan pelatihan model CatBoost dapat berjalan selaras dengan kebutuhan eksplanasi faktor risiko menggunakan metode XAI-SHAP (Martínez-Plumed et al., 2021; Schröer et al., 2021)."
+print(f"P[67] word count: {len(p67_text.split())} words")
+
+# P[101] in Bab 3:
+# Standardize (Chakik et al., 2026) to (El Chakik et al., 2026):
+p101_text = "Proses pembagian data (data splitting) membagi 100.000 entri menjadi 80.000 sampel data latih (80%) dan 20.000 sampel data uji (20%) menggunakan metode stratified sampling. Teknik stratifikasi ini mutlak diperlukan agar proporsi masing-masing kelas target, khususnya kelas minoritas Severe sebesar 4,066%, tetap terjaga secara identik pada kedua himpunan data. Guna mengatasi ketidakseimbangan kelas tersebut tanpa menimbulkan distorsi distribusi, penelitian ini tidak menggunakan teknik oversampling sintetis seperti SMOTE, melainkan menerapkan pendekatan cost-sensitive learning bawaan CatBoost melalui parameter auto_class_weights='Balanced'. Mekanisme ini secara otomatis menghitung dan memberikan bobot penalti kesalahan yang lebih besar terhadap sampel kelas minoritas selama proses optimasi fungsi kerugian (El Chakik et al., 2026). Strategi pembobotan ini terbukti sangat efektif mendorong model mengenali pola pasien berisiko tinggi tanpa mengorbankan performa prediksi pada kelas lainnya."
+print(f"P[101] word count: {len(p101_text.split())} words")

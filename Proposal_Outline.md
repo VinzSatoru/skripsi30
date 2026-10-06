@@ -5,7 +5,7 @@ Kelas : [Kelas Anda]
 --------------------------------------------------
 
 **JUDUL**  
-Penerapan Metode XAI-SHAP pada Algoritma CatBoost untuk Identifikasi Faktor Risiko Gangguan Tidur Berbasis Metrik Gaya Hidup Digital
+Penerapan Metode XAI-SHAP pada Algoritma CatBoost untuk Klasifikasi Faktor Risiko Gangguan Tidur Berbasis Metrik Gaya Hidup Digital
 
 --------------------------------------------------
 

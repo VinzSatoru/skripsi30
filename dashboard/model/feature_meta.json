@@ -4,7 +4,6 @@
     "gender",
     "occupation",
     "bmi",
-    "country",
     "sleep_duration_hrs",
     "sleep_quality_score",
     "rem_percentage",
@@ -27,17 +26,14 @@
     "room_temperature_celsius",
     "weekend_sleep_diff_hrs",
     "season",
-    "day_type",
     "cognitive_performance_score"
   ],
   "cat_features": [
     "gender",
     "occupation",
-    "country",
     "chronotype",
     "mental_health_condition",
-    "season",
-    "day_type"
+    "season"
   ],
   "classes": [
     "Healthy",
@@ -45,7 +41,7 @@
     "Moderate",
     "Severe"
   ],
-  "accuracy": 0.9458,
+  "accuracy": 0.9386,
   "feature_ranges": {
     "age": {
       "type": "numerical",
@@ -85,26 +81,6 @@
       "max": 45.0,
       "mean": 26.289672999999997,
       "step": 0.1
-    },
-    "country": {
-      "type": "categorical",
-      "options": [
-        "Australia",
-        "Brazil",
-        "Canada",
-        "France",
-        "Germany",
-        "India",
-        "Italy",
-        "Japan",
-        "Mexico",
-        "Netherlands",
-        "South Korea",
-        "Spain",
-        "Sweden",
-        "UK",
-        "USA"
-      ]
     },
     "sleep_duration_hrs": {
       "type": "numerical",
@@ -263,13 +239,6 @@
         "Spring",
         "Summer",
         "Winter"
-      ]
-    },
-    "day_type": {
-      "type": "categorical",
-      "options": [
-        "Weekday",
-        "Weekend"
       ]
     },
     "cognitive_performance_score": {

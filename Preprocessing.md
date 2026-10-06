@@ -64,17 +64,18 @@ display(dist_df)
 
 ## 4. Feature Selection & Pemisahan Variabel
 
-Membuang fitur yang tidak berguna (seperti ID) dan memisahkan antara fitur gaya hidup (X) dengan target prediksi (y).
+Membuang fitur non-prediktif (`person_id`), bias geografis (`country`), dan fitur dengan kontribusi kepentingan nol (`day_type`), lalu memisahkan antara fitur gaya hidup (X) dengan target prediksi (y).
 
 ```python
-# Membuang kolom 'person_id' karena hanya identifier unik tanpa nilai medis
-df_cleaned = df.drop(columns=['person_id'])
+# Membuang kolom non-prediktif, bias wilayah, dan zero-importance
+df_cleaned = df.drop(columns=['person_id', 'country', 'day_type'])
 
 # Memisahkan Variabel Independen (X) dan Dependen (y)
 X = df_cleaned.drop(columns=['sleep_disorder_risk'])
 y = df_cleaned['sleep_disorder_risk']
 
 print(f"Jumlah Fitur (X): {X.shape[1]}")
+# Output: Jumlah Fitur (X): 28
 ```
 
 ## 5. Menentukan Fitur Kategorikal (Keunggulan CatBoost)
@@ -87,7 +88,7 @@ cat_features = X.select_dtypes(include=['object']).columns.tolist()
 
 print("Daftar Fitur Kategorikal:")
 print(cat_features)
-# Output: ['gender', 'occupation', 'country', 'chronotype', 'mental_health_condition', 'season', 'day_type']
+# Output: ['gender', 'occupation', 'chronotype', 'mental_health_condition', 'season']
 ```
 
 ## 6. Data Splitting (Pembagian Data Latih dan Uji)

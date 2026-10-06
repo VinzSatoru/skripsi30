@@ -1,0 +1,339 @@
+P[0]: Penerapan Metode XAI-SHAP pada Algoritma CatBoost untuk Klasifikasi Faktor Risiko Gangguan Tidur Berbasis Metrik Gaya Hidup
+
+P[9]: Disusun Oleh:
+
+P[12]: Ahmad Novian Dzulfanni 		231240001438
+
+P[17]: PROGRAM STUDI TEKNIK INFORMATIKA
+
+P[18]: FAKULTAS SAINS DAN TEKNOLOGI
+
+P[19]: UNIVERSITAS ISLAM NAHDLATUL ULAMA JEPARA
+
+P[20]: 2026
+
+P[22]: Penerapan Metode XAI-SHAP pada Algoritma CatBoost untuk Klasifikasi Faktor Risiko Gangguan Tidur Berbasis Metrik Gaya Hidup
+
+P[31]: Disusun Oleh:
+
+P[34]: Ahmad Novian Dzulfanni 		231240001438
+
+P[39]: PROGRAM STUDI TEKNIK INFORMATIKA
+
+P[40]: FAKULTAS SAINS DAN TEKNOLOGI
+
+P[41]: UNIVERSITAS ISLAM NAHDLATUL ULAMA JEPARA
+
+P[42]: 2026
+
+P[43]: HALAMAN PENGESAHANDAFTAR ISI
+
+P[47]: BAB I
+PENDAHULUAN
+
+P[49]: 1.1 Latar Belakang
+
+P[50]: Masalah gangguan tidur saat ini sudah menjadi persoalan kesehatan yang cukup serius di tengah masyarakat modern. Berdasarkan catatan Organisasi Kesehatan Dunia (WHO), sekitar sepertiga populasi dunia kerap mengalami masalah tidur. Kondisi ini tidak boleh disepelekan karena terbukti berhubungan erat dengan peningkatan risiko penyakit kronis, seperti serangan jantung, stroke, dan gangguan metabolisme tubuh (Windred et al., 2024). Di samping merugikan kondisi fisik, kualitas tidur yang buruk juga berdampak langsung pada produktivitas harian, di mana pekerja yang kelelahan cenderung mudah kehilangan konsentrasi sehingga menurunkan efisiensi kerja secara nyata (Uzubuaku, 2023). Hal ini semakin mengkhawatirkan karena keluhan insomnia banyak menimpa orang yang sudah memiliki riwayat penyakit bawaan sebelumnya (Das et al., 2025). Oleh karena itu, pemeriksaan risiko sejak awal sangat dibutuhkan sebelum kondisinya semakin parah.
+
+P[51]: Tingginya angka keluhan gangguan tidur belakangan ini sangat dipengaruhi oleh perubahan pola hidup masyarakat ke arah serba digital. Kebiasaan menatap layar ponsel atau gawai (screen time) hingga larut malam dapat mengacaukan jam biologis alami tubuh, sehingga seseorang menjadi sulit merasa mengantuk saat waktunya beristirahat (Jahrami, 2023). Selain paparan sinar layar, tuntutan pekerjaan dan komunikasi yang terus berjalan melalui internet kerap memicu beban psikologis atau technostress, yang membuat pikiran sulit rileks menjelang tidur (Widayati, 2024). Kebiasaan menggunakan gawai ini juga sering berbarengan dengan minimnya olahraga serta jadwal makan yang berantakan, sehingga memperparah penurunan kualitas tidur sehari-hari (Henrich, 2021). Kondisi yang saling terkait tersebut menunjukkan bahwa upaya mengenali risiko gangguan tidur tidak bisa hanya melihat satu faktor saja, melainkan harus memperhatikan kebiasaan hidup harian secara menyeluruh.
+
+P[52]: Untuk mengolah data kebiasaan hidup yang cukup beragam tersebut, penggunaan teknologi machine learning menjadi salah satu pendekatan yang banyak dipelajari saat ini. Melalui model pembelajaran mesin, pola tersembunyi dari kebiasaan sehari-hari dan kondisi kesehatan seseorang dapat dipetakan secara otomatis guna mendeteksi risiko gangguan tidur lebih awal (Putra & Hidayat, 2024). Penggunaan algoritma gabungan atau ensemble learning juga terbukti mampu memberikan hasil klasifikasi yang lebih tepat dan stabil dibandingkan dengan metode sederhana yang berdiri sendiri (Kaya, 2025). Selain memiliki tingkat ketelitian yang baik, proses pengolahan data menggunakan algoritma komputer tentu berjalan jauh lebih cepat dibandingkan penilaian manual melalui kuesioner fisik (Rahman et al., 2025). Kendati demikian, sebagian besar model machine learning yang memiliki performa tinggi ini masih menyimpan kelemahan utama pada cara kerjanya yang sangat tertutup.
+
+P[53]: Kelemahan cara kerja yang tertutup atau dikenal sebagai kotak hitam (black box) tersebut membuat hasil keputusan algoritma sulit dipahami oleh manusia. Dalam ranah pelayanan medis, dokter maupun tenaga kesehatan tidak bisa begitu saja mempercayai sistem yang hanya mengeluarkan label risiko tanpa memberikan alasan yang jelas di balik hasil tersebut (Amann et al., 2020). Seorang pasien tentu ingin mengetahui kebiasaan mana yang paling memicu masalah tidurnya, apakah karena penggunaan ponsel yang berlebihan, tingkat stres kerja, atau kurangnya waktu berolahraga. Tanpa adanya penjelasan yang transparan dan logis, saran dari sistem komputer akan sulit diterima dalam praktik klinis sehari-hari. Oleh sebab itu, diperlukan metode Explainable Artificial Intelligence (XAI) yang mampu menerjemahkan cara kerja algoritma menjadi bentuk penjelasan visual yang mudah dimengerti oleh dokter maupun pasien (Hulsen, 2023).
+
+P[54]: Walaupun metode XAI sudah mulai banyak diterapkan, penelitian terdahulu mengenai gangguan tidur masih memiliki beberapa kekurangan yang perlu dibenahi. Metode penjelasan populer seperti Shapley Additive exPlanations (SHAP) pada penelitian sebelumnya sering kali hanya digunakan untuk menyaring variabel penting secara umum, belum dimanfaatkan untuk membedah kondisi risiko setiap pasien secara personal (Ha et al., 2023). Masalah lain timbul saat peneliti menggunakan algoritma seperti XGBoost yang mengharuskan pengubahan data teks ke bentuk angka melalui One-Hot Encoding (Xie et al., 2026). Cara tersebut memecah kolom kategori menjadi banyak kolom baru, sehingga penjelasan nilai SHAP ikut terpecah dan arti aslinya menjadi membingungkan. Penggunaan algoritma CatBoost yang dipadukan dengan SHAP sebenarnya pernah dilakukan, namun kajian tersebut masih berfokus pada data penyakit kanker dan belum diterapkan pada kasus gangguan tidur (Srinivasu et al., 2024).
+
+P[55]: Berdasarkan kekurangan pada penelitian terdahulu, algoritma CatBoost hadir sebagai pilihan metode yang sangat cocok untuk mengatasi permasalahan tersebut. CatBoost memiliki kemampuan bawaan dalam membaca data kategori secara langsung tanpa perlu melewati proses One-Hot Encoding yang rumit (Taher & Ayon, 2024). Kemampuan khusus ini sangat penting karena nilai penjelasan dari metode SHAP dapat tetap utuh, sehingga faktor penyebab gangguan tidur bisa dibaca dengan jelas sesuai nama variabel aslinya. Keandalan algoritma CatBoost dalam mengolah data kesehatan campuran yang memiliki variabel angka dan kategori juga sudah terbukti menghasilkan performa klasifikasi yang sangat baik pada beberapa studi klinis lainnya (Lin et al., 2025). Dengan kelebihan tersebut, penggabungan algoritma CatBoost dan metode SHAP menjadi langkah yang sangat tepat untuk membangun sistem prediksi risiko gangguan tidur yang akurat sekaligus mudah dipahami.
+
+P[56]: Guna menjaga agar penelitian tetap fokus dan terarah, studi ini membatasi cakupan data pada penggunaan dataset sekunder metrik gaya hidup digital dari platform Kaggle sebanyak 100.000 data, sehingga tidak melibatkan proses perekaman sinyal medis langsung seperti polisomnografi atau EEG. Penelitian ini menerapkan algoritma CatBoost dengan penanganan data tidak seimbang (class imbalance), yang diintegrasikan bersama metode Tree-SHAP untuk mengklasifikasikan risiko gangguan tidur sekaligus menyajikan penjelasan faktor risiko pada tingkat pasien secara individual. Nilai kontribusi fitur yang dihasilkan kemudian ditranslasikan menjadi saran perbaikan kebiasaan hidup yang praktis berbasis pedoman kebersihan tidur atau Sleep Hygiene. Melalui batasan ruang lingkup tersebut, sistem yang dibangun diposisikan sebagai alat bantu penapisan awal serta pendukung keputusan klinis (Clinical Decision Support System) bagi tenaga kesehatan, bukan sebagai instrumen diagnosis medis definitif pengganti dokter spesialis.
+
+P[57]: 1.2 Rumusan Masalah
+
+P[58]: Berdasarkan latar belakang masalah di atas, rumusan masalah dalam penelitian ini adalah bagaimana penerapan metode Explainable AI (XAI) berbasis Shapley Additive exPlanations (SHAP) pada algoritma CatBoost dapat menghasilkan model klasifikasi risiko gangguan tidur yang akurat, sekaligus mampu menjelaskan pengaruh faktor gaya hidup digital secara transparan dan mudah dipahami?
+
+P[59]: 1.3 Tujuan Penelitian
+
+P[60]: Mengacu pada rumusan masalah yang telah ditetapkan, tujuan dari penelitian ini adalah untuk menerapkan dan mengevaluasi metode Explainable AI (XAI) berbasis Shapley Additive exPlanations (SHAP) pada algoritma klasifikasi CatBoost. Penelitian ini bertujuan membangun sebuah model deteksi dini gangguan tidur yang tidak hanya memiliki tingkat akurasi komputasi yang tinggi, tetapi juga mampu memberikan interpretasi yang transparan, logis, dan personal mengenai besaran kontribusi setiap variabel metrik gaya hidup digital sebagai faktor risiko utama.
+
+P[61]: 1.4 Manfaat Penelitian
+
+P[62]: Penelitian ini diharapkan dapat memberikan manfaat bagi berbagai pihak, baik dari segi pengembangan keilmuan secara teoretis maupun dari segi implementasi praktis di lapangan. Adapun rincian manfaat tersebut adalah sebagai berikut.
+
+P[63]: A. Manfaat Teoretis
+
+P[64]: 1. Manfaat bagi Peneliti
+
+P[65]: Penelitian ini memberikan kesempatan bagi peneliti untuk memperdalam pemahaman mengenai penerapan algoritma CatBoost dan metode SHAP dalam konteks klasifikasi gangguan tidur berbasis data gaya hidup. Melalui proses perancangan, implementasi, dan evaluasi model secara langsung, peneliti memperoleh pengalaman empiris dalam membangun sistem kecerdasan buatan yang tidak hanya akurat tetapi juga transparan dan dapat diinterpretasikan.
+
+P[66]: 2. Manfaat bagi Institusi Pendidikan
+
+P[67]: Hasil penelitian ini diharapkan dapat menjadi referensi akademis bagi mahasiswa maupun dosen di lingkungan institusi pendidikan, khususnya dalam bidang informatika kesehatan dan Explainable Artificial Intelligence. Dokumentasi mengenai kombinasi CatBoost dan SHAP pada data gaya hidup juga dapat dijadikan bahan kajian lanjutan untuk pengembangan penelitian serupa di masa mendatang.
+
+P[68]: B. Manfaat Praktis
+
+P[69]: 1. Manfaat bagi Tenaga Kesehatan
+
+P[70]: Sistem yang dihasilkan dari penelitian ini dapat membantu tenaga kesehatan dalam memahami faktor gaya hidup mana yang paling berpengaruh terhadap risiko gangguan tidur masing-masing pasien. Dengan adanya penjelasan visual dari metode SHAP, dokter tidak hanya menerima label prediksi risiko, melainkan juga memperoleh landasan yang jelas untuk merancang strategi intervensi yang lebih personal dan terarah.
+
+P[71]: 2. Manfaat bagi Masyarakat
+
+P[72]: Bagi masyarakat umum, penelitian ini berpotensi meningkatkan kesadaran mengenai dampak kebiasaan digital sehari-hari terhadap kualitas tidur. Keluaran model yang bersifat mudah dipahami memungkinkan individu untuk mengenali pola perilaku berisiko dalam kehidupan mereka sendiri, sehingga upaya pencegahan gangguan tidur dapat dilakukan secara mandiri dan lebih dini sebelum berkembang menjadi kondisi kronis.
+
+P[74]: BAB II
+LANDASAN TEORI
+
+P[75]: 2.1 Kajian Teori
+
+P[76]: 2.1.1 Gangguan Tidur dan Metrik Gaya Hidup Digital
+
+P[77]: Kualitas tidur yang memadai merupakan salah satu pilar biologis yang sangat fundamental dalam menjaga stabilitas sistem fisiologis dan psikologis manusia (Medic et al., 2017). Berbagai studi klinis skala luas telah membuktikan bahwa durasi tidur yang tidak mencukupi serta pola istirahat yang terganggu secara berkepanjangan berkaitan langsung dengan peningkatan risiko penyakit metabolik, hipertensi, hingga kematian dini (Windred et al., 2024). Dampak penurunan kualitas tidur ini terasa semakin parah ketika menyerang individu yang sebelumnya telah menderita penyakit komorbiditas kronis, di mana keluhan insomnia sering kali memperburuk prognosis medis pasien (Das et al., 2025). Mengingat keterbatasan metode diagnosis fisik di laboratorium rumah sakit yang membutuhkan biaya besar serta waktu tunggu lama, deteksi dini berbasis analisis faktor risiko kini diposisikan sebagai langkah pencegahan paling strategis dalam dunia kesehatan masyarakat (Wang et al., 2025).
+
+P[78]: Perkembangan teknologi komputasi dan telepon pintar dalam satu dekade terakhir telah mengubah pola aktivitas harian masyarakat modern secara drastis. Tingginya intensitas penggunaan perangkat digital menjelang waktu tidur terbukti menjadi determinan perilaku utama yang mengganggu kualitas istirahat malam seseorang secara sistemik (Deivendran et al., 2025). Pancaran radiasi spektrum cahaya biru (blue light) dari layar ponsel menekan pelepasan hormon melatonin pada kelenjar pineal, sehingga menunda inisiasi rasa kantuk dan mengacaukan keselarasan ritme sirkadian alami tubuh (Jahrami, 2023). Kondisi biologis ini menyebabkan fase transisi tidur menjadi jauh lebih lama serta memotong proporsi tidur gelombang lambat yang sangat esensial bagi proses pemulihan organ fisik tubuh. Oleh karena itu, pencatatan metrik durasi paparan layar digital merupakan variabel prediktor yang sangat penting dalam mengidentifikasi gejala awal disfungsi tidur modern.
+
+P[79]: Selain dampak fisiologis akibat paparan radiasi layar gawai, interaksi digital yang konstan juga melahirkan tekanan psikologis baru yang dikenal luas sebagai technostress. Tuntutan untuk selalu merespons pesan kerja, paparan informasi tanpa henti, serta ketakutan tertinggal informasi (FOMO) menciptakan kondisi status kewaspadaan mental fisiologis berlebihan yang menghambat relaksasi pikiran sebelum terlelap (Widayati, 2024). Tekanan psikososial ini kemudian berpadu dengan kebiasaan gaya hidup yang buruk, seperti konsumsi kafein berlebih dan waktu istirahat yang tidak teratur, sehingga memperparah siklus gangguan tidur harian (Henrich et al., 2021). Untuk memutus lingkaran masalah tersebut, prinsip kebersihan tidur (Sleep Hygiene) digunakan sebagai pedoman klinis guna menata ulang pola perilaku individu. Menghubungkan metrik gaya hidup digital dengan pedoman kebersihan tidur ini menjadi dasar perancangan intervensi preventif yang terarah.
+
+P[80]: 2.1.2 Klasifikasi dan Machine Learning
+
+P[81]: Pembelajaran mesin (machine learning) merupakan cabang ilmu kecerdasan buatan yang memfokuskan kajian pada pengembangan algoritma komputasional yang mampu mengekstraksi pengetahuan langsung dari sekumpulan data historis tanpa diprogram secara eksplisit. Dalam ranah klasifikasi terawasi (supervised learning), algoritma bertugas memetakan relasi matematis antara sekumpulan variabel prediktor dengan variabel label target yang telah ditentukan sebelumnya (Rahman et al., 2025). Model klasifikasi yang terlatih selanjutnya dapat dimanfaatkan untuk memprediksi kategori risiko pasien baru secara otomatis dan konsisten. Pemanfaatan teknik klasifikasi ini sangat relevan untuk penapisan kondisi kesehatan, di mana pola interaksi antarvariabel klinis dan kebiasaan hidup sering kali bersifat non-linier serta terlampau rumit untuk dianalisis melalui metode statistik inferensial konvensional (Kaya, 2025). Dengan demikian, pendekatan machine learning membuka peluang besar bagi otomatisasi diagnosis prediktif modern.
+
+P[82]: Untuk meningkatkan ketelitian klasifikasi pada data kesehatan yang memiliki variasi tinggi, pendekatan pembelajaran gabungan atau ensemble learning menjadi paradigma utama yang banyak diadopsi para peneliti saat ini. Metode ini bekerja dengan cara mengintegrasikan sekumpulan model dasar (base learners) guna menghasilkan satu kesatuan model prediksi akhir yang memiliki akurasi serta stabilitas performa yang jauh lebih unggul (Mawardi et al., 2025). Salah satu teknik ensemble paling tangguh adalah Gradient Boosted Decision Trees (GBDT), yang menyusun ratusan pohon keputusan (decision trees) secara berurutan untuk meminimalkan fungsi kerugian melalui optimasi gradien matematis (Taher & Ayon, 2024). Setiap pohon baru dilatih secara khusus untuk mengoreksi kesalahan prediksi yang dihasilkan oleh pohon-pohon sebelumnya. Melalui mekanisme perbaikan berkesinambungan ini, algoritma boosting mampu memetakan batas keputusan multivariat yang sangat kompleks secara efektif, konsisten, dan adaptif.
+
+P[83]: 2.1.3 Algoritma CatBoost (Categorical Boosting)
+
+P[84]: CatBoost, singkatan dari Categorical Boosting, merupakan salah satu algoritma mutakhir dalam rumpun Gradient Boosted Decision Trees yang dikembangkan secara mandiri oleh tim peneliti Yandex (Prokhorenkova et al., 2018). Berbeda dengan pustaka boosting lainnya yang menumbuhkan cabang pohon keputusan secara bebas dan asimetris, CatBoost menerapkan struktur pohon keputusan simetris yang dikenal luas sebagai oblivious trees (Hancock & Khoshgoftaar, 2020). Pada struktur oblivious trees, kriteria pemisahan fitur (feature split) pada setiap tingkat kedalaman pohon diterapkan secara seragam pada seluruh simpul cabang di level yang sama. Pola struktur simetris ini bertindak sebagai mekanisme regularisasi alami yang secara efektif mencegah model mengalami kondisi overfitting pada data latihan. Selain meningkatkan stabilitas generalisasi model, evaluasi pohon simetris dapat dieksekusi menggunakan operasi bitwise biner yang sangat cepat, sehingga menghasilkan kecepatan inferensi yang tinggi.
+
+P[85]: Keunggulan paling mendasar dari CatBoost terletak pada kapabilitas bawaannya dalam memproses fitur-fitur kategorikal secara langsung (native) tanpa pernah mewajibkan tahapan prosedur One-Hot Encoding manual (Hancock & Khoshgoftaar, 2020). Algoritma konvensional sering kali mengubah variabel teks menjadi puluhan kolom biner tiruan yang memicu lonjakan dimensi data secara drastis serta merusak pemahaman semantik asli dari variabel tersebut. CatBoost mengatasi kendala metodologis ini melalui teknik inovatif bernama Ordered Target Statistics, yakni menghitung statistik nilai target pada data urutan acak sebelumnya dengan menyertakan faktor penghalusan prior matematis (Wu et al., 2025). Melalui prinsip terurut ini, transformasi nilai kategori ke bentuk angka tidak melibatkan informasi dari baris data yang sedang dihitung maupun data sesudahnya. Mekanisme tersebut sepenuhnya menghilangkan kebocoran data target (target leakage), sehingga menghasilkan representasi fitur kategori yang utuh dan akurat.
+
+P[86]: Selain keunggulan dalam memproses variabel kategorikal, CatBoost dirancang secara khusus dengan mekanisme Ordered Boosting untuk mengatasi fenomena pergeseran distribusi prediksi (prediction shift) yang kerap melanda algoritma boosting tradisional (Prokhorenkova et al., 2018). Dalam proses pembelajarannya, sekumpulan model bayangan dilatih pada subset permutasi acak untuk menghitung nilai residual tanpa menimbulkan bias pada estimasi gradien. Dalam penerapannya pada data kesehatan yang kerap mengalami ketimpangan jumlah kelas (class imbalance), CatBoost menyediakan parameter pembobotan internal berupa class weights yang dapat dikonfigurasi secara adaptif (Wolak et al., 2025). Pendekatan pembobotan biaya ini memberikan penalti kerugian yang lebih proporsional terhadap kesalahan prediksi pada kelas minoritas berisiko tinggi. Dengan strategi tersebut, model mampu mendeteksi kelompok pasien rentan secara optimal tanpa perlu melakukan manipulasi data sintetis yang berisiko mengubah pola distribusi alami.
+
+P[87]: 2.1.4 Explainable Artificial Intelligence (XAI)
+
+P[88]: Meskipun model pembelajaran mesin modern mampu mencatatkan akurasi prediksi yang sangat mengesankan, sebagian besar arsitektur ensemble beroperasi sebagai kotak hitam (black box) yang sepenuhnya tidak transparan. Kompleksitas matematis yang melibatkan ratusan pohon keputusan berinteraksi secara paralel menyebabkan manusia tidak dapat menelusuri bagaimana sebuah keputusan klasifikasi dapat terbentuk (Amann et al., 2020). Dalam praktik pelayanan medis harian, ketidaktahuan atas proses inferensi algoritma ini menjadi penghalang terbesar dalam adopsi teknologi klinis, karena tenaga medis wajib mempertanggungjawabkan setiap tindakan secara etis dan ilmiah (Sadeghi et al., 2024). Dokter tidak dapat memberikan terapi hanya berdasarkan label probabilitas tanpa memahami faktor pemicu yang melandasinya. Oleh sebab itu, paradigma Explainable Artificial Intelligence (XAI) menjadi kebutuhan mutlak guna membuka selubung kotak hitam komputasi menjadi penjelasan yang rasional bagi praktisi.
+
+P[89]: Dalam taksonomi keilmuan Explainable Artificial Intelligence, metode transparansi model pembelajaran mesin secara umum diklasifikasikan ke dalam dua dimensi interpretasi utama, yaitu interpretabilitas global dan interpretabilitas lokal (Sadeghi et al., 2024). Interpretabilitas global bertujuan untuk memaparkan perilaku kerja model secara keseluruhan pada tingkat populasi, yakni dengan merangkum variabel gaya hidup mana saja yang memiliki pengaruh terkuat terhadap keputusan sistem secara agregat. Sebaliknya, interpretabilitas lokal berfokus pada penguraian keputusan prediksi untuk satu kasus individu tertentu, dengan merinci kontribusi positif maupun negatif dari setiap fitur yang mendorong seorang pasien masuk ke dalam kategori risiko tertentu (Srinivasu et al., 2022). Di lingkungan layanan kesehatan personal, penjelasan lokal menjadi instrumen yang sangat berharga karena kondisi patologis setiap pasien selalu dipicu oleh kombinasi faktor risiko perilaku yang unik dan sangat beragam.
+
+P[90]: 2.1.5 Shapley Additive exPlanations (SHAP) dan Tree-SHAP
+
+P[91]: Metode Shapley Additive exPlanations (SHAP) merupakan pendekatan penjelasan model yang dikembangkan berlandaskan teori permainan koalisi (cooperative game theory) oleh Lloyd Shapley (Lundberg & Lee, 2017). Dalam konteks pembelajaran mesin, setiap variabel input diposisikan layaknya pemain dalam sebuah tim, sedangkan hasil keputusan prediksi model dianggap sebagai nilai kemenangan bersama yang harus dialokasikan secara adil. Nilai Shapley mengukur kontribusi marginal dari suatu variabel dengan cara menghitung selisih keluaran prediksi ketika variabel tersebut diikutsertakan dan ditiadakan dari seluruh kemungkinan kombinasi himpunan bagian fitur lainnya. Pendekatan berbasis nilai Shapley ini memiliki keunggulan mendasar karena dijamin sepenuhnya oleh empat aksioma matematika esensial, yaitu efisiensi, simetri, dummy, dan aditivitas. Melalui keempat aksioma tersebut, pembagian bobot kontribusi antarvariabel dipastikan bebas dari bias serta memiliki landasan teoretis yang paling kokoh.
+
+P[92]: Kendati nilai Shapley memiliki landasan matematis yang sangat solid, perhitungan eksak pada model non-linier konvensional memiliki kompleksitas komputasi eksponensial yang membutuhkan waktu sangat lama. Untuk memecahkan kendala efisiensi tersebut, Lundberg et al. (2020) merumuskan algoritma Tree-SHAP, sebuah varian algoritma khusus yang mengoptimalkan penghitungan nilai Shapley pada model berbasis pohon seperti CatBoost dalam waktu polinomial. Algoritma Tree-SHAP mengevaluasi struktur pohon keputusan secara terpadu tanpa memerlukan proses penyampelan acak berulang kali. Luaran nilai Tree-SHAP dapat direpresentasikan secara intuitif melalui grafik ringkasan (summary plot) untuk interpretasi populasi global, serta grafik gaya dorong (force plot atau waterfall plot) untuk membedah kontribusi fitur individual per pasien (Zhang et al., 2025; Bhattarai et al., 2024). Visualisasi ini memberikan wawasan yang sangat transparan dan mudah dipahami bagi tenaga medis dalam merumuskan intervensi klinis.
+
+P[93]: 2.2 Hasil Penelitian yang Relevan
+
+P[94]: Kajian mengenai pemanfaatan algoritma pembelajaran mesin untuk klasifikasi gangguan tidur telah berkembang secara signifikan dalam beberapa tahun terakhir. Taher & Ayon (2024) melakukan evaluasi komparatif terhadap empat algoritma machine learning pada dataset gaya hidup kesehatan tidur, di mana model Gradient Boosting berhasil membukukan nilai akurasi tertinggi mencapai 93,80%. Penelitian tersebut membuktikan bahwa algoritma berbasis pohon sangat efektif dalam memetakan korelasi antara parameter tidur dengan karakteristik fisik individu. Kendati demikian, studi tersebut masih memosisikan model sebagai kotak hitam yang tidak mampu menyajikan eksplanasi mengenai faktor risiko dominan yang dialami oleh masing-masing pasien secara spesifik. Di sisi lain, Lin et al. (2025) mengevaluasi pola tidur pada populasi mahasiswa berskala besar, namun sintesis temuannya masih terbatas pada tataran analisis statistik kelompok dan belum menyentuh personalisasi inferensi klinis.
+
+P[95]: Upaya menghadirkan transparansi pada model prediksi risiko tidur mulai dieksplorasi oleh sejumlah peneliti melalui integrasi metode Explainable AI. Ha et al. (2023) menerapkan algoritma XGBoost yang dikombinasikan dengan metode SHAP untuk memprediksi risiko gangguan tidur obstruktif berdasarkan data kuesioner medis, dengan hasil kurva AUROC melampaui angka 0,89. Meskipun sukses membuktikan kegunaan penjelasan model, metode SHAP pada studi tersebut hanya difungsikan sebatas instrumen penyaring fitur di awal, bukan sebagai media interpretasi interaktif per pasien. Celah metodologis lain tampak pada studi Xie et al. (2026) yang menerapkan One-Hot Encoding pada XGBoost, di mana prosedur pemecahan kolom kategori terbukti memecah nilai atribusi SHAP ke dalam sub-fitur biner terpisah. Fragmentasi nilai ini mengaburkan arti semantik variabel asli serta menyulitkan dokter dalam memahami profil risiko pasien.
+
+P[96]: Untuk menjembatani kesenjangan antara kebutuhan data kategorikal yang utuh dan transparansi inferensi medis, kombinasi algoritma CatBoost dan SHAP mulai diterapkan pada sejumlah bidang kesehatan. Srinivasu et al. (2024) mengintegrasikan CatBoost dengan SHAP pada data klinis kanker dan berhasil mencatatkan akurasi diagnostik hingga 99,3% dengan visualisasi atribusi yang sangat jelas. Validasi keunggulan CatBoost atas data tabular medis berskala besar juga diperkuat oleh Hancock & Khoshgoftaar (2020) serta Wolak et al. (2025). Meskipun demikian, penerapan sinergi arsitektur CatBoost dan Tree-SHAP sejauh ini belum pernah dieksplorasi secara terpadu pada metrik gaya hidup digital harian untuk kasus klasifikasi gangguan tidur. Mengisi celah riset inilah yang menjadi posisi kebaruan (novelty) utama dari penelitian ini, yakni menghadirkan model klasifikasi yang akurat, transparan, dan dapat ditindaklanjuti secara klinis.
+
+P[97]: Table 2.1 State of the art
+
+P[99]: 2.3 Kerangka Berpikir
+
+P[101]: Kerangka berpikir dalam penelitian ini dibangun secara runtut untuk menyelesaikan dilema antara tingginya akurasi komputasi dengan tuntutan transparansi klinis dalam deteksi gangguan tidur. Titik tolak masalah berakar dari meluasnya penurunan kualitas tidur akibat kebiasaan gaya hidup digital seperti screen time dan technostress, yang memiliki struktur data heterogen dan mengalami ketimpangan kelas. Masalah ini diselesaikan melalui implementasi algoritma CatBoost Classifier yang memproses data campuran tanpa One-Hot Encoding, serta menerapkan pembobotan kelas internal. Selanjutnya, lapisan metode Tree-SHAP diintegrasikan untuk mengekstraksi nilai kontribusi fitur secara global dan lokal tanpa mengalami fragmentasi makna. Pada tahap akhir, bobot penjelasan personal tersebut ditranslasikan menjadi rekomendasi perilaku praktis berbasis prinsip Sleep Hygiene, sehingga menghasilkan purwarupa sistem pendukung keputusan klinis yang terpercaya, akurat, dan aplikatif bagi tenaga kesehatan.
+
+P[102]: 2.4 Pertanyaan Penelitian
+
+P[103]: Berdasarkan penegasan rumusan masalah dan seluruh kerangka teoretis yang telah diuraikan, maka pertanyaan penelitian operasional yang akan diuji dan dijawab melalui tahapan eksperimen ini dirumuskan sebagai berikut: Pertama, bagaimana tingkat kinerja, presisi, dan akurasi klasifikasi algoritma CatBoost dalam mengidentifikasi kategori risiko gangguan tidur pada dataset metrik gaya hidup digital yang mengalami ketidakseimbangan kelas? Kedua, bagaimana kapabilitas metode Tree-SHAP dalam mengekstraksi serta menyajikan visualisasi atribusi kontribusi fitur gaya hidup secara utuh tanpa mengalami distorsi fragmentasi nilai kategori? Ketiga, bagaimana rancangan integrasi penjelasan lokal Tree-SHAP dengan pedoman kebersihan tidur (Sleep Hygiene) sehingga mampu menghasilkan rekomendasi intervensi klinis personal yang mudah dipahami dan ditindaklanjuti secara nyata oleh tenaga medis maupun pasien? Rangkaian pertanyaan operasional ini menjadi pedoman terarah dalam seluruh tahapan eksperimen penelitian ini.
+
+P[105]: BAB III
+METODE PENELITIAN
+
+P[106]: 3.1. Jenis dan Pendekatan Penelitian
+
+P[107]: 3.1.1. Jenis Penelitian
+
+P[108]: Jenis penelitian yang diterapkan dalam studi ini adalah penelitian kuantitatif dengan pendekatan eksperimental komputasional. Penelitian kuantitatif berfokus pada pengolahan, pemodelan, dan analisis data numerik serta kategorikal berskala besar guna menemukan pola tersembunyi dan membangun prediksi klasifikasi secara objektif, sistematis, dan terukur. Pendekatan eksperimental secara spesifik digunakan untuk merancang, melatih, serta menguji performa model pembelajaran mesin dalam mengklasifikasikan tingkat risiko gangguan tidur berdasarkan data masukan parameter gaya hidup digital. Metode ini memungkinkan pengujian hipotesis teknis secara empiris melalui serangkaian eksperimen algoritma yang terkontrol dan dapat diulang kembali oleh peneliti lain. Melalui pendekatan kuantitatif ini, seluruh temuan penelitian, mulai dari tingkat akurasi klasifikasi hingga kontribusi marginal setiap fitur gaya hidup, dapat dibuktikan secara matematis dan dipertanggungjawabkan keabsahannya dalam ranah sains data kesehatan (Das et al., 2025).
+
+P[109]: 3.1.2. Pendekatan Penelitian
+
+P[110]: Pendekatan penelitian yang digunakan dalam skripsi ini mengadopsi kerangka kerja standar industri CRISP-DM (Cross-Industry Standard Process for Data Mining). Kerangka kerja ini dipilih secara khusus karena menyediakan metodologi yang sangat sistematis, terstruktur, dan bersifat iteratif untuk memandu seluruh siklus pengembangan proyek penambangan data dan pembelajaran mesin. Standar CRISP-DM terdiri atas enam tahapan utama yang saling berkesinambungan, yaitu pemahaman kebutuhan masalah (business understanding), pemahaman data awal (data understanding), persiapan data (data preparation), pemodelan algoritma (modeling), evaluasi performa model (evaluation), serta penyebaran hasil temuan (deployment). Penerapan metodologi komprehensif ini menjamin setiap tahapan teknis terhubung secara konsisten dengan tujuan klinis, sehingga proses rekayasa fitur dan pelatihan model CatBoost dapat berjalan selaras dengan kebutuhan eksplanasi faktor risiko menggunakan metode XAI-SHAP (Martínez-Plumed et al., 2021; Schröer et al., 2021).
+
+P[112]: Gambar 3.1 Diagram Alir Kerangka Kerja CRISP-DM dalam Klasifikasi Gangguan Tidur dan XAI-SHAP
+
+P[113]: 3.2. Waktu dan Tempat Penelitian
+
+P[114]: 3.2.1. Waktu Penelitian
+
+P[115]: Pelaksanaan penelitian ini direncanakan berlangsung selama enam bulan, terhitung mulai bulan Oktober 2025 sampai dengan bulan Maret 2026. Alokasi waktu tersebut disusun secara bertahap guna mengakomodasi seluruh rangkaian kegiatan ilmiah, yang dimulai dari identifikasi masalah, studi pustaka, penyusunan proposal penelitian, hingga seminar proposal. Selanjutnya, tahapan berlanjut pada pengumpulan serta pra-pemrosesan dataset sekunder, perancangan arsitektur komputasi, pelatihan model CatBoost, serta integrasi pustaka Tree-SHAP untuk analisis interpretabilitas faktor risiko tidur. Dua bulan terakhir dialokasikan khusus untuk pengujian performa secara menyeluruh, analisis komparasi hasil evaluasi metrik, perancangan prototipe sistem pendukung keputusan klinis, dan penulisan naskah laporan skripsi lengkap. Pengaturan jadwal yang terstruktur dan terukur ini bertujuan memastikan seluruh tahapan penelitian dapat diselesaikan tepat waktu sesuai standar mutu akademik Fakultas Sains dan Teknologi UNISNU Jepara.
+
+P[116]: 3.2.2. Tempat Penelitian
+
+P[117]: Penelitian ini secara resmi dilaksanakan di Laboratorium Komputasi Program Studi Teknik Informatika, Fakultas Sains dan Teknologi, Universitas Islam Nahdlatul Ulama Jepara, yang beralamat di Jalan Taman Siswa Nomor 09, Pekalongan, Tahunan, Kabupaten Jepara, Jawa Tengah. Pemilihan lokasi ini didasarkan pada ketersediaan fasilitas infrastruktur jaringan internet berkecepatan tinggi serta iklim akademik yang sangat mendukung proses riset komputasi sains data modern. Selain itu, seluruh rangkaian proses eksperimen pemodelan algoritma dan analisis data sekunder juga dijalankan secara fleksibel melalui stasiun kerja komputasi mandiri peneliti yang terintegrasi dengan media penyimpanan awan. Pendekatan hibrida ini memungkinkan pengawasan, pengolahan berkas tabular berukuran besar, replikasi kode eksperimen, dan penulisan laporan penelitian dilakukan secara efisien, terpusat, dan berkelanjutan tanpa terkendala oleh batasan jarak fisik maupun keterbatasan jam operasional laboratorium kampus.
+
+P[118]: 3.3. Populasi dan Sampel Penelitian
+
+P[119]: 3.3.1. Populasi Penelitian
+
+P[120]: Populasi dalam penelitian ini adalah seluruh kumpulan rekaman data profil kesehatan dan kebiasaan gaya hidup masyarakat modern yang terhimpun dalam basis data kesehatan digital terbuka internasional. Kumpulan data tersebut mencerminkan beragam dinamika kondisi demografis, psikologis, tingkat stres kerja harian, aktivitas fisik, pola istirahat malam, hingga intensitas interaksi manusia dengan perangkat teknologi elektronik. Entri populasi ini mencakup jutaan variasi kombinasi perilaku harian individu yang berpotensi memicu berbagai tingkatan gangguan tidur, mulai dari kondisi tubuh yang normal dan bugar hingga gangguan insomnia serta apnea tidur obstruktif yang membutuhkan penanganan medis. Keluasan cakupan populasi ini memberikan gambaran yang sangat representatif mengenai fenomena penurunan kualitas tidur akibat perubahan gaya hidup di era transformasi digital, sehingga menyediakan landasan komprehensif bagi pembuktian ilmiah berbasis algoritma pembelajaran mesin.
+
+P[121]: 3.3.2. Sampel Penelitian
+
+P[122]: Sampel penelitian yang digunakan diambil melalui teknik purposive sampling dengan menetapkan kriteria kelengkapan atribut metrik gaya hidup digital dan rekaman fisiologis tidur secara terstruktur. Berdasarkan kriteria inklusi tersebut, sampel yang dianalisis berupa Sleep Health and Lifestyle Dataset yang diperoleh dari repositori publik Kaggle dengan jumlah total 100.000 baris rekaman data dan 32 kolom atribut fitur. Dataset ini mencakup 7 fitur bertipe kategorikal seperti jenis kelamin, profesi, negara, kondisi kesehatan mental, serta 24 fitur bertipe numerik yang meliputi usia, durasi tidur, tingkat stres harian, durasi paparan layar gawai, dan asupan kafein sebelum tidur. Seluruh sampel memiliki variabel target dependen bernama sleep_disorder_risk yang terbagi menjadi empat tingkatan klasifikasi risiko, yaitu Healthy, Mild, Moderate, dan Severe, sehingga sangat memadai untuk melatih model klasifikasi multi-kelas berskala besar.
+
+P[123]: Tabel 3.2 Deskripsi Atribut dan Variabel Penelitian
+
+P[124]: 3.4. Instrumen Penelitian
+
+P[125]: 3.4.1. Perangkat Keras (Hardware)
+
+P[126]: Instrumen perangkat keras (hardware) yang digunakan dalam penelitian ini berfungsi sebagai infrastruktur komputasi untuk menjalankan seluruh proses analisis data, pelatihan model CatBoost, hingga kalkulasi nilai Shapley yang membutuhkan sumber daya intensif. Unit perangkat keras yang digunakan berupa satu unit komputer jinjing (laptop) dengan spesifikasi prosesor AMD Ryzen 7 5800H yang memiliki konfigurasi 8 core dan 16 threads dengan kecepatan dasar 3,2 GHz hingga 4,4 GHz. Kapasitas memori akses acak (Random Access Memory / RAM) yang terpasang sebesar 16 GB DDR4 saluran ganda (dual-channel), yang dipadukan dengan media penyimpanan berkecepatan tinggi Solid State Drive (SSD) NVMe berkapasitas 512 GB. Spesifikasi teknis ini sangat memadai untuk memuat dataset 100.000 baris ke dalam memori kerja serta mengeksekusi komputasi iterasi algoritma gradient boosting dan visualisasi SHAP secara cepat dan stabil.
+
+P[127]: Tabel 3.3 Spesifikasi Perangkat Keras (Hardware) Penelitian
+
+P[128]: 3.4.2. Perangkat Lunak (Software)
+
+P[129]: Instrumen perangkat lunak (software) yang dimanfaatkan dalam penelitian ini mencakup sistem operasi Windows 11 Home 64-bit sebagai lingkungan kerja utama, serta Visual Studio Code dan Jupyter Notebook sebagai Integrated Development Environment (IDE). Bahasa pemrograman yang digunakan adalah Python versi 3.10 yang didukung oleh berbagai pustaka sains data komputasional bereputasi tinggi. Pustaka Pandas dan NumPy digunakan untuk manipulasi struktur matriks data, pembersihan, dan analisis statistik deskriptif awal. Pustaka Scikit-Learn dimanfaatkan dalam proses pemisahan dataset (train-test split) serta perhitungan metrik evaluasi klasifikasi. Algoritma pembelajaran mesin dibangun menggunakan pustaka resmi CatBoost versi 1.2+, sementara proses analisis interpretabilitas model diimplementasikan melalui pustaka SHAP dengan modul TreeExplainer. Selain itu, visualisasi grafik dirancang menggunakan Matplotlib dan Seaborn, sedangkan antarmuka sistem pendukung keputusan klinis dikembangkan menggunakan kerangka kerja berbasis web.
+
+P[130]: Tabel 3.4 Spesifikasi Perangkat Lunak (Software) dan Pustaka Pemrograman
+
+P[131]: 3.5. Teknik Pengumpulan Data
+
+P[132]: Teknik pengumpulan data dalam penelitian ini dilakukan melalui dua metode utama, yaitu studi dokumentasi dataset sekunder dan studi kepustakaan ilmiah. Pengumpulan data sekunder dilakukan dengan mengunduh Sleep Health and Lifestyle Dataset secara resmi dari platform repositori data terbuka Kaggle dalam format berkas comma-separated values (.csv). Setelah berkas diunduh, peneliti melakukan pemeriksaan keabsahan data digital guna memastikan tidak ada kerusakan data (data corruption) dan memeriksa ketiadaan nilai hilang (missing values) pada keseluruhan 100.000 baris rekaman. Sementara itu, studi kepustakaan dilakukan dengan menelaah buku panduan skripsi, artikel jurnal internasional bereputasi, serta dokumentasi teknis pustaka algoritma. Telaah literatur ini bertujuan memperoleh landasan teoritis yang kuat terkait formulasi matematis CatBoost, prinsip keadilan nilai Shapley dalam metode XAI-SHAP, serta relevansi klinis dari parameter gaya hidup digital terhadap gangguan tidur.
+
+P[134]: 3.6. Teknik Analisis Data
+
+P[135]: Teknik analisis data dalam penelitian ini dirancang secara sistematis dengan mengacu pada enam siklus tahapan metodologi CRISP-DM (Cross-Industry Standard Process for Data Mining). Metodologi ini dipilih karena menjamin keterpaduan yang kuat antara tujuan klinis penanganan gangguan tidur dan implementasi teknis algoritma pembelajaran mesin. Rangkaian analisis dimulai dari tahapan pemahaman kebutuhan masalah (business understanding) dan pemahaman data (data understanding) untuk mengidentifikasi karakteristik variabel serta sebaran kelas. Selanjutnya, tahapan persiapan data (data preparation) dilakukan guna menyiapkan matriks fitur yang optimal. Tahap pemodelan (modeling) menerapkan algoritma CatBoost yang dipadukan dengan modul Tree-SHAP untuk interpretabilitas model. Seluruh keluaran model diuji secara ketat pada tahap evaluasi (evaluation) menggunakan metrik klasifikasi multi-kelas, sebelum akhirnya ditransformasikan menjadi prototipe sistem pendukung keputusan klinis berbasis web pada tahap akhir penyebaran (deployment).
+
+P[136]: 3.6.1. Pemahaman Bisnis dan Data (Business and Data Understanding)
+
+P[137]: Tahap pemahaman bisnis dan data (business and data understanding) diawali dengan mendefinisikan tujuan analitik, yaitu membangun sistem prediksi risiko gangguan tidur yang mampu mengklasifikasikan individu ke dalam empat tingkatan: Healthy, Mild, Moderate, dan Severe. Eksplorasi data awal dilakukan terhadap 100.000 baris rekaman dengan 32 kolom atribut untuk memeriksa tipe data, ketiadaan nilai hilang, serta pola korelasi awal. Hasil analisis statistik deskriptif menunjukkan adanya kondisi ketidakseimbangan kelas (class imbalance) yang sangat nyata pada variabel target. Kelas Healthy mendominasi dengan 54.156 entri (54,156%), diikuti kelas Mild sebanyak 33.479 entri (33,479%), dan kelas Moderate sebanyak 8.299 entri (8,299%). Sementara itu, kelas Severe yang paling berisiko secara klinis hanya memiliki 4.066 entri atau setara 4,066% populasi, sehingga memerlukan perhatian khusus dalam strategi pemodelan agar terhindar dari bias prediksi.
+
+P[139]: Tabel 3.5 Distribusi Sebaran Kelas Target Sleep Disorder Risk
+
+P[141]: Grafik Sebaran Ketidakseimbangan Kelas Target (Dataset 100.000 Baris)
+
+P[142]: 3.6.2. Pra-pemrosesan Data (Data Preprocessing)
+
+P[143]: Tahap persiapan data (data preparation) dilakukan secara cermat guna membersihkan dan menyusun matriks fitur agar siap diproses oleh algoritma pembelajaran mesin. Langkah awal yang dilakukan adalah seleksi fitur dengan mengeliminasi atribut person_id yang bersifat non-prediktif, serta atribut day_type dan country guna menghilangkan variabel dengan kontribusi nol sekaligus mencegah bias wilayah geografis. Melalui proses seleksi tersebut, dataset menyisakan 28 variabel prediktor independen dan satu variabel target dependen. Keunggulan komputasi CatBoost dimaksimalkan pada tahap ini melalui fitur penanganan kategorikal secara alami (native categorical handling). Sebanyak lima atribut bertipe teks, yaitu gender, occupation, chronotype, mental_health_condition, dan season, didaftarkan langsung ke dalam model tanpa melalui prosedur One-Hot Encoding. Prosedur ini sangat efektif dalam mencegah peningkatan dimensi data (curse of dimensionality), menghemat memori, serta mempertahankan keutuhan data.
+
+P[144]: 3.6.3. Pembagian Data dan Penanganan Ketidakseimbangan Kelas
+
+P[145]: Proses pembagian data (data splitting) membagi 100.000 entri menjadi 80.000 sampel data latih (80%) dan 20.000 sampel data uji (20%) menggunakan metode stratified sampling. Teknik stratifikasi ini mutlak diperlukan agar proporsi masing-masing kelas target, khususnya kelas minoritas Severe sebesar 4,066%, tetap terjaga secara identik pada kedua himpunan data. Guna mengatasi ketidakseimbangan kelas tersebut tanpa menimbulkan distorsi distribusi, penelitian ini tidak menggunakan teknik oversampling sintetis seperti SMOTE, melainkan menerapkan pendekatan cost-sensitive learning bawaan CatBoost melalui parameter auto_class_weights='Balanced'. Mekanisme ini secara otomatis menghitung dan memberikan bobot penalti kesalahan yang lebih besar terhadap sampel kelas minoritas selama proses optimasi fungsi kerugian (El Chakik et al., 2026). Strategi pembobotan ini terbukti sangat efektif mendorong model mengenali pola pasien berisiko tinggi tanpa mengorbankan performa prediksi pada kelas lainnya.
+
+P[146]: 3.6.4. Pemodelan Machine Learning (CatBoost Classifier)
+
+P[147]: Tahap pemodelan (modeling) menerapkan algoritma CatBoost Classifier yang dirancang dengan arsitektur pohon simetris (symmetric oblivious trees). Struktur pohon simetris ini berfungsi sebagai regularisasi alami yang sangat efektif dalam mempercepat waktu komputasi inferensi serta meminimalkan risiko terjadinya overfitting. Selain itu, algoritma ini memanfaatkan mekanisme ordered boosting guna mengatasi masalah target leakage dan prediction shift yang kerap muncul pada algoritma gradient boosting konvensional. Konfigurasi hyperparameter yang ditetapkan dalam eksperimen ini meliputi penentuan jumlah pohon keputusan maksimum sebanyak 1.000 iterasi, tingkat laju pembelajaran (learning rate) sebesar 0,05, dan kedalaman pohon (depth) sebesar 6 level. Model juga dilengkapi dengan kriteria penghentian dini (early stopping) sebanyak 50 putaran evaluasi, sehingga proses pelatihan akan berhenti secara otomatis apabila metrik evaluasi pada data validasi tidak lagi menunjukkan perbaikan performa signifikan.
+
+P[148]: Tabel 3.6 Konfigurasi Hyperparameter Algoritma CatBoost
+
+P[151]: 3.6.5. Simulasi Perhitungan Matematis Manual (Toy Example Workflow)
+
+P[152]: Guna membuktikan keabsahan logika algoritma secara transparan, penelitian ini menyertakan simulasi perhitungan manual berbasis sampel data kecil (toy example). Pembuktian matematis pertama dilakukan terhadap formulasi bobot penalti kelas pada mekanisme cost-sensitive learning dengan menggunakan rumus perbandingan terbalik frekuensi data. Dengan total populasi sebesar seratus ribu rekaman yang terdistribusi ke dalam empat kelas risiko, pembobotan manual menghasilkan nilai bobot sebesar 0,4616 untuk kelas Healthy, 0,7467 untuk kelas Mild, 3,0124 untuk kelas Moderate, dan 6,1485 untuk kelas Severe. Hasil penghitungan manual ini terbukti identik dan selaras sempurna tanpa ada selisih dengan nilai pembobotan internal yang diterapkan oleh modul pustaka CatBoost. Pembuktian ini mengonfirmasi secara ilmiah bahwa sampel kelas minoritas Severe secara otomatis menerima penalti hukuman tiga belas kali lipat lebih berat dibanding kelas mayoritas selama proses optimasi berlangsung.
+
+P[153]: wc = N / (K × Nc)
+
+P[154]: Tabel 3.7 Komparasi Perhitungan Bobot Penalti Kelas Manual vs Internal Pustaka CatBoost
+
+P[155]: Tahapan simulasi perhitungan manual kedua difokuskan pada pembuktian mekanisme transformasi fitur kategorikal melalui metode Ordered Target Statistics bawaan CatBoost. Menggunakan lima baris sampel data tiruan representatif pada atribut jenis kelamin dan profesi, proses transformasi numerik dihitung secara sekuensial menggunakan rumus statistik target terurut dengan parameter prioritas sebesar satu. Setiap nilai kategori dikonversi menjadi nilai estimasi probabilitas kontinu berdasarkan akumulasi label target baris data terdahulu ditambah pembobotan prioritas global tanpa melibatkan label data masa depan. Hasil kalkulasi manual pada kelima sampel data tersebut menghasilkan angka pembobotan kontinu yang persis sama dengan matriks fitur terproses yang dihasilkan oleh fungsi internal CatBoost Pool. Verifikasi manual ini membuktikan secara ilmiah bahwa algoritma mampu mempertahankan keutuhan relasi data kategorikal gaya hidup tanpa menimbulkan ledakan dimensi fitur artifisial.
+
+P[156]: x̂k = (Σ y_historis + a · P) / (Count_historis + a)
+
+P[157]: Tabel 3.8 Sampel Data Kecil (Toy Dataset 5 Baris) dan Langkah Transformasi Ordered Target Statistics
+
+P[158]: Simulasi perhitungan manual ketiga mencakup validasi metrik evaluasi klasifikasi dari matriks kebingungan empat kali empat serta pembuktian sifat aditivitas lokal metode XAI-SHAP. Berdasarkan rekapitulasi data uji sebanyak dua puluh ribu rekaman, perhitungan manual menghasilkan tingkat Recall kelas Severe sebesar 89,05% dan Macro-averaged F1-Score sebesar 89,25%, yang nilainya identik dengan luaran modul evaluasi Scikit-Learn. Sementara itu, pembuktian aksioma efisiensi metode SHAP pada satu sampel profil pasien menunjukkan bahwa penjumlahan nilai dasar sebesar 0,120 dengan akumulasi nilai kontribusi seluruh variabel gaya hidup sebesar 0,828 menghasilkan angka nilai probabilitas sebesar 0,948. Nilai tersebut terbukti sama persis dengan probabilitas akhir klasifikasi yang diprediksi oleh CatBoost, sehingga membuktikan secara nyata bahwa seluruh kontribusi marginal SHAP bersifat aditif, adil, konsisten, dan dapat dipertanggungjawabkan keabsahan matematisnya dalam ranah kesehatan.
+
+P[160]: Gambar 3.5 Diagram Alir Simulasi Perhitungan Matematis Manual (Toy Example Workflow) pada Algoritma CatBoost dan XAI-SHAP
+
+P[162]: Gambar 3.6 Visualisasi Bobot Penalti Kelas dan Matriks Kebingungan (Confusion Matrix) 4x4 Riil pada 20.000 Sampel Uji
+
+P[163]: Tabel 3.9 Matriks Kebingungan (Confusion Matrix) 4x4 Riil (20.000 Data Uji) dan Pembuktian Manual Formula Metrik
+
+P[164]: Catatan: Macro-F1 Score terhitung manual sebesar 89,25% terbukti selaras dengan laporan klasifikasi Scikit-Learn (Macro Avg = 0.89).
+
+P[165]: Tabel 3.10 Pembuktian Aksioma Aditivitas Efisiensi SHAP (f(x) = φ0 + Σ φi) pada Satu Rekaman Profil Pasien Uji
+
+P[168]: 3.6.6. Evaluasi Kinerja Model
+
+P[169]: Tahap evaluasi (evaluation) dilakukan secara komprehensif untuk mengukur performa generalisasi model CatBoost pada 20.000 sampel data uji yang belum pernah dilihat sebelumnya. Penilaian kinerja model tidak hanya bersandar pada nilai akurasi semata, karena metrik akurasi rentan menimbulkan ilusi performa tinggi (accuracy paradox) pada dataset dengan distribusi kelas yang tidak seimbang. Oleh sebab itu, evaluasi dilengkapi dengan metrik Precision, Recall, dan Macro-averaged F1-Score untuk memastikan keandalan prediksi pada seluruh kelas risiko (Chicco & Jurman, 2022). Di samping itu, matriks kebingungan (confusion matrix) multi-kelas berukuran 4x4 disusun untuk memetakan secara detail jumlah klasifikasi yang tepat (True Positive) serta kesalahan klasifikasi (misclassification) pada setiap kelas. Analisis kurva Receiver Operating Characteristic beserta nilai Area Under Curve (ROC-AUC) juga dihitung untuk menguji daya diskriminasi probabilitas model secara objektif.
+
+P[170]: Tabel 3.11 Struktur Teoretis Matriks Kebingungan (Multi-Class Confusion Matrix) 4x4
+
+P[171]: Tabel 3.7 Struktur Matriks Kebingungan (Multi-Class Confusion Matrix) 4x4
+
+P[172]: Catatan: TP merupakan prediksi yang tepat (True Positive), sedangkan E_(i→j) mencerminkan kesalahan klasifikasi dari kelas aktual i yang terprediksi keliru sebagai kelas j.
+
+P[173]: 3.6.7. Interpretasi Model Berbasis XAI-SHAP
+
+P[174]: Guna mengatasi keterbatasan sifat kotak hitam (black-box) pada algoritma CatBoost, penelitian ini mengintegrasikan metode Explainable Artificial Intelligence berbasis SHAP (Shapley Additive exPlanations). Modul komputasi yang digunakan adalah TreeExplainer, yang secara khusus dioptimalkan untuk mengevaluasi struktur pohon keputusan dengan efisiensi waktu polinomial tanpa memerlukan aproksimasi sampling (Lundberg & Lee, 2017). Analisis interpretabilitas dijalankan pada dua tingkatan analitik yang saling melengkapi, yaitu tingkat global dan tingkat lokal. Pada tingkat global, grafik ringkasan (SHAP summary plot) dan grafik kepentingan fitur (feature importance) digunakan untuk meranking variabel gaya hidup digital yang paling dominan mempengaruhi risiko gangguan tidur secara keseluruhan. Sementara itu, pada tingkat lokal, grafik air terjun (SHAP waterfall plot) diaplikasikan untuk membedah kontribusi marginal setiap parameter perilaku terhadap keputusan prediksi pada individu pasien tertentu (Ha et al., 2023).
+
+P[176]: Gambar 3.2 Alur Komputasi dan Interpretasi XAI Tree-SHAP
+
+P[177]: 3.6.8. Perancangan Prototipe Sistem Pendukung Keputusan Klinis (Deployment)
+
+P[178]: Tahap akhir dari siklus CRISP-DM adalah penyebaran (deployment) yang diwujudkan melalui perancangan prototipe sistem pendukung keputusan klinis (Clinical Decision Support System / CDSS) berbasis antarmuka web interaktif. Prototipe ini dikembangkan untuk mentransformasikan hasil komputasi model prediktif dan nilai eksplanasi SHAP ke dalam bentuk visualisasi yang mudah dipahami oleh tenaga kesehatan maupun masyarakat umum. Melalui antarmuka sistem, pengguna dapat memasukkan data profil kebiasaan harian, seperti durasi penggunaan gawai sebelum tidur, jumlah konsumsi kafein, dan tingkat stres kerja. Mesin inferensi kemudian memproses parameter tersebut menggunakan model CatBoost tersimpan untuk menghasilkan kategori risiko gangguan tidur, yang langsung disertai grafik kontribusi fitur SHAP secara individual. Informasi diagnostik yang transparan ini selanjutnya diintegrasikan dengan modul saran perbaikan pola hidup (sleep hygiene) yang terpersonalisasi guna mendukung tindakan pencegahan dini yang tepat sasaran.
+
+P[180]: Gambar 3.3 Mockup Antarmuka Prototipe Web CDSS Analisis Gangguan Tidur Berbasis CatBoost-SHAP
+
+P[182]: DAFTAR PUSTAKA
+
+P[183]: Amann, J., Blasimme, A., Vayena, E., Frey, D., & Madai, V. I. (2020). Explainability for artificial intelligence in healthcare: a multidisciplinary perspective. BMC Medical Informatics and Decision Making, 20(1), 310. https://doi.org/10.1186/s12911-020-01332-6
+
+P[184]: Bhattarai, P., Thakuri, D. S., Nie, Y., & Chand, G. B. (2024). Explainable AI-based Deep-SHAP for mapping the multivariate relationships between regional neuroimaging biomarkers and cognition. European Journal of Radiology, 174, 111403. https://doi.org/10.1016/j.ejrad.2024.111403
+
+P[185]: Chicco, D., & Jurman, G. (2022). An invitation to greater use of Matthews correlation coefficient in robotics and artificial intelligence. Frontiers in Robotics and AI, 9, 876814. https://doi.org/10.3389/frobt.2022.876814
+
+P[186]: Das, P., Arif, M., Hasan, M. E., ALmerab, M. M., Al Habib, A., Al Mamun, F., Mamun, M. A., & Gozal, D. (2025). Prevalence and factors associated with insomnia among chronic disease patients in Bangladesh: A machine learning study. Nature and Science of Sleep, 17, 2725–2741. https://doi.org/10.2147/NSS.S547335
+
+P[187]: Deivendran, S., Kanagaraj, K., & Leelabai, T. (2025). Impact of excessive screen time on sleep quality and sleep disturbances among young adults: A cross-sectional study. Journal of Pharmacy and Bioallied Sciences, 17(Suppl 1), S944–S947. https://doi.org/10.4103/jpbs.jpbs_944_25
+
+P[188]: El Chakik, A., Nakhal, B., & Nassreddine, G. (2026). Explainable semi-supervised learning framework for Alzheimer’s disease prediction using SHAP-based feature selection and cost-sensitive CatBoost. Sci, 8(7), 171. https://doi.org/10.3390/sci8070171
+
+P[189]: Ha, S., Choi, S. J., Lee, S., Wijaya, R. H., Kim, J. H., Joo, E. Y., & Kim, J. K. (2023). Predicting the risk of sleep disorders using a machine learning–based simple questionnaire: Development and validation study. Journal of Medical Internet Research, 25, e46520. https://doi.org/10.2196/46520
+
+P[190]: Hancock, J. T., & Khoshgoftaar, T. M. (2020). CatBoost for big data: an interdisciplinary review. Journal of Big Data, 7(1), 94. https://doi.org/10.1186/s40537-020-00369-8
+
+P[191]: Henrich, L. C., Antypa, N., & Van den Berg, J. F. (2021). Sleep quality in students: Associations with psychological and lifestyle factors. Current Psychology, 41, 4221–4230. https://doi.org/10.1007/s12144-021-01801-9
+
+P[192]: Hulsen, T. (2023). Explainable artificial intelligence (XAI): Concepts and challenges in healthcare. AI, 4(3), 652–666. https://doi.org/10.3390/ai4030034
+
+P[193]: Jahrami, H. (2023). The relationship between Nomophobia, insomnia, Chronotype, phone in proximity, screen time, and sleep duration in adults: A mobile phone app-assisted cross-sectional study. Healthcare, 11(10), 1503. https://doi.org/10.3390/healthcare11101503
+
+P[194]: Kaya, C. (2025). Comparative analysis of conventional and ensemble machine learning techniques for sleep disorder classification. Journal of Artificial Intelligence and Data Science (JAIDA), 5(2), 132–139. https://dergipark.org.tr/en/pub/jaida/issue/87774/1825274
+
+P[195]: Lin, Y., Chen, X., Wang, J., Zhang, H., Liu, M., & Wu, L. (2025). Evaluation of sleep quality and influencing factors among medical and non-medical students using machine learning techniques. Frontiers in Psychiatry, 16, 1533875. https://doi.org/10.3389/fpsyt.2025.1533875
+
+P[196]: Lundberg, S. M., & Lee, S. I. (2017). A unified approach to interpreting model predictions. Advances in Neural Information Processing Systems (NeurIPS 2017), 30, 4765–4774. https://doi.org/10.48550/arXiv.1705.07874
+
+P[197]: Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., Katz, R., Himmelfarb, J., Bansal, N., & Lee, S. I. (2020). From local explanations to global understanding with explainable AI for trees. Nature Machine Intelligence, 2(1), 56–67. https://doi.org/10.1038/s42256-019-0138-9
+
+P[198]: Martínez-Plumed, F., Contreras-Ochando, L., Ferri, C., Hernandez-Orallo, J., Kull, M., Lachiche, N., & Flach, P. (2021). CRISP-DM twenty years later: From data mining processes to data science trajectories. IEEE Transactions on Knowledge and Data Engineering, 33(8), 3048–3061. https://doi.org/10.1109/TKDE.2019.2962680
+
+P[199]: Mawardi, A. B., Pradini, R. S., & Haris, M. S. (2025). Komparasi algoritma boosting untuk prediksi gangguan tidur. JITET (Jurnal Informatika dan Teknik Elektro Terapan), 13(3), 1377–1385. https://doi.org/10.23960/jitet.v13i3.7281
+
+P[200]: Medic, G., Wille, M., & Hemels, M. E. (2017). Short- and long-term health consequences of sleep disruption. Nature and Science of Sleep, 9, 151–161. https://doi.org/10.2147/NSS.S134864
+
+P[201]: Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). CatBoost: unbiased boosting with categorical features. Advances in Neural Information Processing Systems (NeurIPS 2018), 31, 6638–6648. https://doi.org/10.48550/arXiv.1706.09516
+
+P[202]: Putra, J. L., & Hidayat, W. F. (2024). Prediksi kualitas tidur: Pendekatan machine learning yang mengintegrasikan faktor kesehatan dan lingkungan. Computer Science (CO-SCIENCE), 4(2), 157–162. https://doi.org/10.31294/coscience.v4i2.4737
+
+P[203]: Rahman, M. A., Jahan, I., Islam, M., Jabid, T., Ali, M. S., Rashid, M. R. A., Islam, M. M., Ferdaus, M. H., Rasel, M. M. K., Jahan, M. R., Sharmin, S., Rimi, T. A., Talukder, A. S., Matin, M. M. H., & Ali, M. A. (2025). Improving sleep disorder diagnosis through optimized machine learning approaches. IEEE Access, 13, 22051–22070. https://doi.org/10.1109/ACCESS.2025.3535535
+
+P[204]: Sadeghi, Z., Alizadehsani, R., & Cifci, M. A. (2024). A review of Explainable Artificial Intelligence in healthcare. Computers and Electrical Engineering, 118, 109370. https://doi.org/10.1016/j.compeleceng.2024.109370
+
+P[205]: Schröer, C., Kruse, F., & Gómez, J. M. (2021). A systematic literature review on applying CRISP-DM process model. Procedia Computer Science, 181, 526–534. https://doi.org/10.1016/j.procs.2021.01.199
+
+P[206]: Srinivasu, P. N., Sandhya, N., Jhaveri, R. H., & Raut, R. (2022). From Blackbox to Explainable AI in Healthcare: Existing Tools and Case Studies. Mobile Information Systems, 2022, 8167821. https://doi.org/10.1155/2022/8167821
+
+P[207]: Srinivasu, P. N., Shafi, J., Arif, M., Debtera, B., & Gudi, A. (2024). XAI-driven CatBoost multi-layer perceptron neural network for analyzing breast cancer. Scientific Reports, 14, 28674. https://doi.org/10.1038/s41598-024-79620-8
+
+P[208]: Taher, A., & Ayon, W. I. Z. (2024). Exploring sleep disorders: A comparative analysis of machine learning algorithms on sleep health and lifestyle data. 2024 IEEE PEEIACON, 1–6. https://doi.org/10.1109/PEEIACON63629.2024.10800593
+
+P[209]: Uzubuaku, I. A. (2023). Sleep health as an economic asset: Evaluating roles of adequate sleep in global labor efficiency. Multidisciplinary Innovations & Research Analysis (MIRA), 4(4), 71–85. https://openviewjournal.com/index.php/mira/issue/view/16
+
+P[210]: Wang, X., Zhang, Y., & Lu, H. (2025). Development and validation of an explainable machine learning model for predicting the risk of sleep disorders in older adults with multimorbidity: a cross-sectional study. Frontiers in Public Health, 13, 1619406. https://doi.org/10.3389/fpubh.2025.1619406
+
+P[211]: Widayati, K. A. (2024). Technostress and sleep quality among university students. Asian Journal of Social Health and Behavior, 7(4), 197–205. https://doi.org/10.4103/shb.shb_177_24
+
+P[212]: Windred, D. P., Burns, A. C., Rutter, M. K., & Phillips, A. J. K. (2024). Sleep regularity is a stronger predictor of mortality risk than sleep duration: A prospective cohort study. Sleep, 47(1), zsad253. https://doi.org/10.1093/sleep/zsad253
+
+P[213]: Wolak, M., Plichta, M., & Orlicki, P. (2025). Interpretable ensemble learning for tumor-type prediction with a SHAP-based evaluation of CatBoost and voting classifiers. Scientific Reports, 15, 31079. https://doi.org/10.1038/s41598-025-31079-x
+
+P[214]: Wu, L., Tao, Y., & Xie, Y. (2025). Prediction of three-year all-cause mortality in patients with heart failure and atrial fibrillation using the CatBoost model. BMC Cardiovascular Disorders, 25(1), 4928. https://doi.org/10.1186/s12872-025-04928-w
+
+P[215]: Xie, Y., Chen, Y., Han, Y., Zhai, S., Xiao, L., Yin, D., & Chen, Y. (2026). Identifying influencing factors associated with sleep quality in undergraduates based on partial least squares regression and XGBoost. Frontiers in Psychology, 16, 1732946. https://doi.org/10.3389/fpsyg.2025.1732946
+
+P[216]: Zhang, M., Shen, T., Lou, Y., & Li, X. (2025). Exploring the complex associations between community public spaces and healthy aging: an explainable analysis using CatBoost and SHAP. BMC Public Health, 25(1), 2200. https://doi.org/10.1186/s12889-025-23402-y
+
+P[217]: Thalla, M. K. (2026). Sleep Health & Daily Performance Dataset (Version 1) [Data set]. Kaggle. https://www.kaggle.com/datasets/mohankrishnathalla/sleep-health-and-daily-performance-dataset
+

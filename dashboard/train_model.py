@@ -23,8 +23,8 @@ print(f"  Dataset shape: {df.shape}")
 # ── 2. PREPROCESSING ─────────────────────────────────────────
 print("\n[2/5] Preprocessing...")
 
-# Drop kolom ID dan fitur post-diagnosis yang bisa menyebabkan leakage
-DROP_COLS = ['person_id', 'felt_rested', 'sleep_disorder_risk']
+# Drop kolom ID, bias geografis, zero importance, dan fitur post-diagnosis yang bisa menyebabkan leakage
+DROP_COLS = ['person_id', 'country', 'day_type', 'felt_rested', 'sleep_disorder_risk']
 TARGET = 'sleep_disorder_risk'
 
 X = df.drop(columns=DROP_COLS)
