@@ -44,10 +44,10 @@ Status penulisan naskah proposal telah mencapai **100% lengkap, sinkron, dan ter
 
 ```
 [Bab 1: Pendahuluan]       ✅ SELESAI (120–130 kata per paragraf, bebas halusinasi)
-[Bab 2: Tinjauan Pustaka]   ✅ SELESAI (6 Jurnal SOTA Q1/IEEE, 5 Gap, Landasan Teori Lengkap)
+[Bab 2: Tinjauan Pustaka]   ✅ SELESAI (6 Jurnal SOTA Q1/IEEE, Tabel SOTA 8 Kolom, 5 Gap, Landasan Teori)
 [Bab 3: Metodologi]         ✅ SELESAI (Alur CRISP-DM, 27 Fitur, Perhitungan Manual CatBoost & SHAP)
-[Daftar Pustaka]            ✅ SELESAI (100% Lolos Uji Bijeksi Sitasi, Dilengkapi DOI Aktif)
-[Outline Proposal]          ✅ SELESAI (Tabel Komparatif 6 Kolom Sesuai Arahan Pembimbing)
+[Daftar Pustaka]            ✅ SELESAI (100% Lolos Uji Bijeksi Sitasi, Dilengkapi DOI Aktif & File Mendeley RIS/BIB)
+[Outline Proposal]          ✅ SELESAI (Tabel State of the Art 8 Kolom Standar Sidang Proposal)
 ```
 
 ### Rincian Per Bagian Dokumen:
