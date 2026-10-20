@@ -4,6 +4,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import qn, nsdecls
+from latex2mathml.converter import convert as latex2mathml_convert
+from lxml import etree
 import os, sys, json, shutil
 
 if hasattr(sys.stdout, 'reconfigure'):
@@ -13,13 +15,28 @@ if hasattr(sys.stdout, 'reconfigure'):
 OUT_DIR = r"c:\Users\ahmad\OneDrive\ドキュメント\skripsi\02_Draft_Per_Bab\Bab_2"
 TARGET_DOCX = os.path.join(OUT_DIR, "BAB 2.docx")
 ROOT_COPY = r"c:\Users\ahmad\OneDrive\ドキュメント\skripsi\BAB 2.docx"
+MASTER_DIR = r"c:\Users\ahmad\OneDrive\ドキュメント\skripsi\01_Naskah_Proposal_Master"
+PROPOSAL_BAB2_COPY = os.path.join(MASTER_DIR, "BAB 2.docx")
 IMAGE_PATH = r"c:\Users\ahmad\OneDrive\ドキュメント\skripsi\scratch\extracted_images\Gambar_2_1_Kerangka_Berpikir.png"
 SOTA_JSON = r"c:\Users\ahmad\OneDrive\ドキュメント\skripsi\scratch\sota_table_data.json"
+XSLT_PATH = r"C:\Program Files\Microsoft Office\root\Office16\MML2OMML.XSL"
+
+xslt_tree = etree.parse(XSLT_PATH)
+transform_omml = etree.XSLT(xslt_tree)
+
+def latex_to_omml(latex_code):
+    """Converts LaTeX string to native Word OMML XML string."""
+    mathml = latex2mathml_convert(latex_code)
+    tree = etree.fromstring(mathml)
+    omml = transform_omml(tree)
+    omml_str = etree.tostring(omml, encoding='unicode')
+    return omml_str
 
 doc = docx.Document()
 
 # ---------------------------------------------------------------------------
 # Page Setup: Standard Academic Thesis (Left 4cm, Top 3cm, Right 3cm, Bottom 3cm)
+# Total text width = 21.0 - 4.0 - 3.0 = 14.0 cm = 5.51 inches
 # ---------------------------------------------------------------------------
 section = doc.sections[0]
 section.page_width = Cm(21.0)
@@ -49,7 +66,7 @@ def remove_table_borders(table):
         tblBorders.append(border)
     tblPr.append(tblBorders)
 
-def set_table_borders(table, color="D3D3D3", sz="4", val="single"):
+def set_table_borders(table, color="B0C4DE", sz="4", val="single"):
     tblPr = table._tbl.tblPr
     tblBorders = OxmlElement('w:tblBorders')
     for border_name in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
@@ -123,77 +140,111 @@ def add_h3(doc, text):
     r.font.size = Pt(12)
     r.font.bold = True
 
-def add_equation_block(doc, eq_text, eq_num, param_dict=None):
+def add_native_equation_block(doc, latex_code, eq_num, param_list=None):
     """
-    Creates a publication-grade equation block:
+    Creates a publication-grade native Microsoft Word equation block:
     - 2-column borderless table
-    - Col 0: Centered equation in clean math typography
-    - Col 1: Right-aligned (Persamaan 2.X)
-    - Followed by structured parameter definitions
+    - Col 0: Centered native OMML equation (width = 4.4 inches)
+    - Col 1: Right-aligned (Persamaan 2.X) (width = 1.1 inches)
+    - Followed by a perfectly aligned 3-column table for parameter descriptions
     """
     tbl = doc.add_table(rows=1, cols=2)
     tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
     tbl.autofit = False
     remove_table_borders(tbl)
     
-    # Col widths (sum ~ 14 cm = 5.5 inches)
-    tbl.columns[0].width = Inches(4.5)
-    tbl.columns[1].width = Inches(1.5)
+    tbl.columns[0].width = Inches(4.4)
+    tbl.columns[1].width = Inches(1.1)
     
-    # Cell 0: Equation
+    # Cell 0: Native OMML equation
     c0 = tbl.cell(0, 0)
+    c0.width = Inches(4.4)
     p0 = c0.paragraphs[0]
     p0.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p0.paragraph_format.space_before = Pt(4)
-    p0.paragraph_format.space_after = Pt(4)
-    p0.paragraph_format.line_spacing = 1.15
-    r0 = p0.add_run(eq_text)
-    r0.font.name = 'Times New Roman'
-    r0.font.size = Pt(11.5)
-    r0.font.bold = True
+    p0.paragraph_format.space_before = Pt(6)
+    p0.paragraph_format.space_after = Pt(6)
     
-    # Cell 1: Equation Number
+    omml_xml = latex_to_omml(latex_code)
+    omml_el = parse_xml(omml_xml)
+    p0._p.append(omml_el)
+    
+    # Cell 1: Equation number
     c1 = tbl.cell(0, 1)
+    c1.width = Inches(1.1)
     p1 = c1.paragraphs[0]
     p1.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    p1.paragraph_format.space_before = Pt(4)
-    p1.paragraph_format.space_after = Pt(4)
-    p1.paragraph_format.line_spacing = 1.15
+    p1.paragraph_format.space_before = Pt(6)
+    p1.paragraph_format.space_after = Pt(6)
     r1 = p1.add_run(f"({eq_num})")
     r1.font.name = 'Times New Roman'
     r1.font.size = Pt(11)
     r1.font.bold = True
     
-    # Parameter descriptions
-    if param_dict:
-        p_desc = doc.add_paragraph()
-        p_desc.paragraph_format.left_indent = Inches(0.4)
-        p_desc.paragraph_format.first_line_indent = Inches(0.0)
-        p_desc.paragraph_format.space_before = Pt(2)
-        p_desc.paragraph_format.space_after = Pt(8)
-        p_desc.paragraph_format.line_spacing = 1.15
-        
-        r_lead = p_desc.add_run("di mana:\n")
+    # Parameters section with aligned '='
+    if param_list:
+        p_intro = doc.add_paragraph()
+        p_intro.paragraph_format.left_indent = Inches(0.25)
+        p_intro.paragraph_format.first_line_indent = Inches(0.0)
+        p_intro.paragraph_format.space_before = Pt(2)
+        p_intro.paragraph_format.space_after = Pt(2)
+        r_lead = p_intro.add_run("Keterangan:")
         r_lead.font.name = 'Times New Roman'
-        r_lead.font.size = Pt(10.5)
+        r_lead.font.size = Pt(11)
         r_lead.font.italic = True
         
-        items = list(param_dict.items())
-        for idx, (sym, desc) in enumerate(items):
-            r_sym = p_desc.add_run(f"  •  {sym}")
-            r_sym.font.name = 'Times New Roman'
-            r_sym.font.size = Pt(10.5)
-            r_sym.font.bold = True
+        # 3-column table: Symbol (1.2 in), '=' (0.25 in), Description (4.05 in)
+        param_tbl = doc.add_table(rows=len(param_list), cols=3)
+        param_tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
+        param_tbl.autofit = False
+        remove_table_borders(param_tbl)
+        
+        param_tbl.columns[0].width = Inches(1.2)
+        param_tbl.columns[1].width = Inches(0.25)
+        param_tbl.columns[2].width = Inches(4.05)
+        
+        for r_idx, item in enumerate(param_list):
+            row = param_tbl.rows[r_idx]
+            sym_latex, desc = item
             
-            r_sep = p_desc.add_run(" = ")
-            r_sep.font.name = 'Times New Roman'
-            r_sep.font.size = Pt(10.5)
+            # Symbol cell: rendered via inline OMML math
+            c_s = row.cells[0]
+            c_s.width = Inches(1.2)
+            p_s = c_s.paragraphs[0]
+            p_s.paragraph_format.left_indent = Inches(0.25)
+            p_s.paragraph_format.space_before = Pt(1)
+            p_s.paragraph_format.space_after = Pt(1)
+            p_s.paragraph_format.line_spacing = 1.15
+            p_s.alignment = WD_ALIGN_PARAGRAPH.LEFT
             
-            r_val = p_desc.add_run(desc + ("\n" if idx < len(items)-1 else ""))
-            r_val.font.name = 'Times New Roman'
-            r_val.font.size = Pt(10.5)
+            sym_omml = latex_to_omml(sym_latex)
+            sym_el = parse_xml(sym_omml)
+            p_s._p.append(sym_el)
+            
+            # Equal sign cell
+            c_e = row.cells[1]
+            c_e.width = Inches(0.25)
+            p_e = c_e.paragraphs[0]
+            p_e.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_e.paragraph_format.space_before = Pt(1)
+            p_e.paragraph_format.space_after = Pt(1)
+            p_e.paragraph_format.line_spacing = 1.15
+            r_e = p_e.add_run("=")
+            r_e.font.name = 'Times New Roman'
+            r_e.font.size = Pt(11)
+            
+            # Description cell
+            c_d = row.cells[2]
+            c_d.width = Inches(4.05)
+            p_d = c_d.paragraphs[0]
+            p_d.paragraph_format.space_before = Pt(1)
+            p_d.paragraph_format.space_after = Pt(1)
+            p_d.paragraph_format.line_spacing = 1.15
+            p_d.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            r_d = p_d.add_run(desc)
+            r_d.font.name = 'Times New Roman'
+            r_d.font.size = Pt(10.5)
 
-print("Writing document content...")
+print("Building BAB 2.docx with native OMML equations...")
 
 # ---------------------------------------------------------------------------
 # DOCUMENT TITLE
@@ -246,7 +297,7 @@ add_h3(doc, "2.1.2 Pembelajaran Mesin dan Klasifikasi Terawasi")
 
 add_p(doc,
     "Pembelajaran mesin (machine learning) merupakan cabang keilmuan kecerdasan buatan yang berfokus pada pengembangan algoritma komputasional yang mampu mempelajari pola tersembunyi secara langsung dari data historis tanpa diprogram secara kaku (rule-based). "
-    "Dalam paradigma klasifikasi terawasi (supervised learning), model diinstruksikan untuk memetakan fungsi aproksimasi matematis f: X → Y yang menghubungkan matriks fitur prediktor independen X ∈ R^(N x M) dengan vektor label target diskrit Y ∈ {1, ..., K} (Rahman et al., 2025). "
+    "Dalam paradigma klasifikasi terawasi (supervised learning), model diinstruksikan untuk memetakan fungsi aproksimasi matematis f: X → Y yang menghubungkan matriks fitur prediktor independen X dengan vektor label target diskrit Y (Rahman et al., 2025). "
     "Pada penelitian ini, ruang target didefinisikan ke dalam empat tingkatan stratifikasi risiko klinis (K = 4), yaitu Healthy (c = 1), Mild (c = 2), Moderate (c = 3), dan Severe (c = 4). "
     "Keunggulan pendekatan machine learning terletak pada kapabilitasnya dalam menangkap interaksi multivariat non-linier antara metrik fisiologis dan pola perilaku digital yang terlampau rumit jika dianalisis melalui uji statistik univariat tradisional (Kaya, 2025)."
 )
@@ -255,17 +306,17 @@ add_p(doc,
     "Dalam proses optimasi matematis klasifikasi multi-kelas, model memperbarui parameter bobot internalnya dengan meminimalkan fungsi kerugian Multi-Class Cross-Entropy Loss yang didefinisikan secara formal pada Persamaan (2.1):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="L_Multi-CE = - (1 / N) * ∑_{i=1}^N ∑_{k=1}^K y_{i,k} · ln(p̂_{i,k})",
+    latex_code=r"\mathcal{L}_{\text{Multi-CE}} = - \frac{1}{N} \sum_{i=1}^N \sum_{k=1}^K y_{i,k} \ln(\hat{p}_{i,k})",
     eq_num="Persamaan 2.1",
-    param_dict={
-        "L_Multi-CE": "nilai fungsi kerugian multi-class cross-entropy",
-        "N": "total jumlah seluruh sampel observasi data (N = 80.000 pada data latih)",
-        "K": "jumlah kategori tingkatan kelas risiko target (K = 4)",
-        "y_{i,k}": "variabel indikator biner bernilai 1 jika sampel ke-i termasuk ke dalam kelas k, dan 0 jika sebaliknya",
-        "p̂_{i,k}": "estimasi probabilitas prediksi model bahwa sampel observasi ke-i tergolong pada kelas k"
-    }
+    param_list=[
+        (r"\mathcal{L}_{\text{Multi-CE}}", "nilai fungsi kerugian multi-class cross-entropy;"),
+        (r"N", "total jumlah seluruh sampel observasi data (N = 80.000 pada data latih);"),
+        (r"K", "jumlah kategori tingkatan kelas risiko target (K = 4: Healthy, Mild, Moderate, Severe);"),
+        (r"y_{i,k}", "variabel indikator biner bernilai 1 jika sampel ke-i termasuk ke dalam kelas k, dan 0 jika sebaliknya;"),
+        (r"\hat{p}_{i,k}", "estimasi probabilitas prediksi model bahwa sampel observasi ke-i tergolong pada kelas k.")
+    ]
 )
 
 add_p(doc,
@@ -273,41 +324,42 @@ add_p(doc,
     "Oleh karena itu, evaluasi diagnostik multi-kelas wajib diuraikan menggunakan metrik evaluasi Recall (sensitivitas deteksi) dan Precision (tingkat keyakinan positif) untuk masing-masing kelas target k, sebagaimana dirumuskan pada Persamaan (2.2) dan Persamaan (2.3):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="Recall_k = TP_k / (TP_k + FN_k)",
+    latex_code=r"\text{Recall}_k = \frac{\text{TP}_k}{\text{TP}_k + \text{FN}_k}",
     eq_num="Persamaan 2.2",
-    param_dict={
-        "Recall_k": "sensitivitas model dalam menjaring seluruh kasus aktual pada kelas k (True Positive Rate)",
-        "TP_k": "jumlah sampel kelas k yang diprediksi secara tepat oleh model (True Positive)",
-        "FN_k": "jumlah sampel kelas k yang terlewat dan diprediksi keliru sebagai kelas lain (False Negative)"
-    }
+    param_list=[
+        (r"\text{Recall}_k", "sensitivitas model dalam menjaring seluruh kasus aktual pada kelas k (True Positive Rate);"),
+        (r"\text{TP}_k", "jumlah sampel kelas k yang diprediksi secara tepat oleh model (True Positive);"),
+        (r"\text{FN}_k", "jumlah sampel kelas k yang terlewat dan diprediksi keliru sebagai kelas lain (False Negative).")
+    ]
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="Precision_k = TP_k / (TP_k + FP_k)",
+    latex_code=r"\text{Precision}_k = \frac{\text{TP}_k}{\text{TP}_k + \text{FP}_k}",
     eq_num="Persamaan 2.3",
-    param_dict={
-        "Precision_k": "tingkat ketepatan prediksi positif model saat melabeli suatu sampel sebagai kelas k",
-        "FP_k": "jumlah sampel dari kelas lain yang secara keliru diprediksi masuk ke dalam kelas k (False Positive)"
-    }
+    param_list=[
+        (r"\text{Precision}_k", "tingkat ketepatan prediksi positif model saat melabeli suatu sampel sebagai kelas k;"),
+        (r"\text{TP}_k", "jumlah sampel kelas k yang diprediksi secara tepat (True Positive);"),
+        (r"\text{FP}_k", "jumlah sampel dari kelas lain yang secara keliru diprediksi masuk ke dalam kelas k (False Positive).")
+    ]
 )
 
 add_p(doc,
     "Guna menyatukan trade-off antara presisi dan sensitivitas ke dalam satu nilai kuantitatif agregat yang adil bagi seluruh tingkatan risiko, metrik Macro-averaged F1-Score dihitung dengan merata-ratakan nilai F1-Score harmonik dari setiap kelas tanpa dipengaruhi oleh dominasi kelas mayoritas, sebagaimana dirumuskan pada Persamaan (2.4) (Chicco & Jurman, 2022):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="Macro-F1 = (1 / K) * ∑_{k=1}^K [2 * (Precision_k * Recall_k) / (Precision_k + Recall_k)]",
+    latex_code=r"\text{Macro-F1} = \frac{1}{K} \sum_{k=1}^K \frac{2 \cdot \text{Precision}_k \cdot \text{Recall}_k}{\text{Precision}_k + \text{Recall}_k}",
     eq_num="Persamaan 2.4",
-    param_dict={
-        "Macro-F1": "rata-rata harmonik performa klasifikasi di seluruh tingkatan risiko tanpa pembobotan frekuensi",
-        "K": "jumlah total kelas risiko target (K = 4)",
-        "Precision_k": "nilai presisi pada kelas risiko ke-k sesuai Persamaan (2.3)",
-        "Recall_k": "nilai recall pada kelas risiko ke-k sesuai Persamaan (2.2)"
-    }
+    param_list=[
+        (r"\text{Macro-F1}", "rata-rata harmonik performa klasifikasi di seluruh tingkatan risiko tanpa pembobotan frekuensi;"),
+        (r"K", "jumlah total kelas risiko target (K = 4);"),
+        (r"\text{Precision}_k", "nilai presisi pada kelas risiko ke-k sesuai Persamaan (2.3);"),
+        (r"\text{Recall}_k", "nilai sensitivitas (recall) pada kelas risiko ke-k sesuai Persamaan (2.2).")
+    ]
 )
 
 # ---------------------------------------------------------------------------
@@ -328,16 +380,16 @@ add_p(doc,
     "Mekanisme ini bekerja dengan mengonfigurasi parameter auto_class_weights='Balanced', yang secara otomatis menghitung faktor pembobotan penalti w_c untuk setiap kelas c berdasarkan rasio terbalik dari frekuensi kemunculannya, sebagaimana dirumuskan pada Persamaan (2.5):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="w_c = N / (K * N_c)",
+    latex_code=r"w_c = \frac{N}{K \cdot N_c}",
     eq_num="Persamaan 2.5",
-    param_dict={
-        "w_c": "bobot penalti kesalahan klasifikasi untuk kelas target risiko c",
-        "N": "total jumlah seluruh sampel data pelatihan (N = 80.000)",
-        "K": "jumlah kategori kelas target (K = 4)",
-        "N_c": "frekuensi jumlah sampel observasi yang termasuk ke dalam kelas target c"
-    }
+    param_list=[
+        (r"w_c", "bobot penalti kesalahan klasifikasi untuk kelas target risiko c;"),
+        (r"N", "total jumlah seluruh sampel data pelatihan (N = 80.000);"),
+        (r"K", "jumlah kategori kelas target (K = 4);"),
+        (r"N_c", "frekuensi jumlah sampel observasi yang termasuk ke dalam kelas target c.")
+    ]
 )
 
 add_p(doc,
@@ -353,35 +405,35 @@ add_p(doc,
     "Transformasi nilai kategori x_{σ_p, k} pada baris urutan ke-p menjadi representasi angka kontinu x̂_{σ_p, k} dihitung secara eksklusif hanya berdasarkan akumulasi nilai target dari sampel-sampel yang berada pada urutan sebelumnya (j < p), sebagaimana diformulasikan secara matematis pada Persamaan (2.6) (Prokhorenkova et al., 2018):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="x̂_{σ_p, k} = [ ∑_{j=1}^{p-1} I(x_{σ_j, k} = x_{σ_p, k}) · y_{σ_j} + a · P ] / [ ∑_{j=1}^{p-1} I(x_{σ_j, k} = x_{σ_p, k}) + a ]",
+    latex_code=r"\hat{x}_{\sigma_p, k} = \frac{\sum_{j=1}^{p-1} \mathbb{I}(x_{\sigma_j, k} = x_{\sigma_p, k}) \cdot y_{\sigma_j} + a \cdot P}{\sum_{j=1}^{p-1} \mathbb{I}(x_{\sigma_j, k} = x_{\sigma_p, k}) + a}",
     eq_num="Persamaan 2.6",
-    param_dict={
-        "x̂_{σ_p, k}": "nilai transformasi numerik kontinu dari variabel kategori pada observasi urutan ke-p",
-        "σ": "vektor permutasi acak dari indeks observasi dataset pelatihan",
-        "I(·)": "fungsi indikator bernilai 1 jika kategori sampel historis sama dengan sampel saat ini, dan 0 jika berbeda",
-        "y_{σ_j}": "nilai target dari observasi terdahulu pada urutan permutasi (j < p)",
-        "P": "nilai prior acuan global, yakni rata-rata nilai target di seluruh dataset pelatihan",
-        "a": "parameter bobot penghalusan prior (smoothing weight, bernilai konstan a = 1)"
-    }
+    param_list=[
+        (r"\hat{x}_{\sigma_p, k}", "nilai transformasi numerik kontinu dari variabel kategori pada observasi urutan ke-p;"),
+        (r"\sigma", "vektor permutasi acak dari indeks observasi dataset pelatihan;"),
+        (r"\mathbb{I}(\cdot)", "fungsi indikator bernilai 1 jika kategori sampel historis sama dengan sampel saat ini, dan 0 jika berbeda;"),
+        (r"y_{\sigma_j}", "nilai target dari observasi terdahulu pada urutan permutasi (j < p);"),
+        (r"P", "nilai prior acuan global, yakni rata-rata nilai target di seluruh dataset pelatihan;"),
+        (r"a", "parameter bobot penghalusan prior (smoothing weight, bernilai konstan a = 1).")
+    ]
 )
 
 add_p(doc,
     "Dalam implementasi praktis perhitungan manual (sebagaimana disimulasikan pada Bab III), formulasi operasional Persamaan (2.6) dapat dinyatakan secara ringkas sebagai rasio antara total target historis ditambah pembobotan prior terhadap frekuensi kemunculan historis:"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="x̂_k = (∑ y_historis + a · P) / (Count_historis + a)",
+    latex_code=r"\hat{x}_k = \frac{\sum y_{\text{historis}} + a \cdot P}{\text{Count}_{\text{historis}} + a}",
     eq_num="Persamaan 2.6b",
-    param_dict={
-        "x̂_k": "nilai numerik terproses dari fitur kategori",
-        "∑ y_historis": "akumulasi nilai target pada kemunculan kategori yang sama pada data terdahulu",
-        "Count_historis": "frekuensi kemunculan kategori serupa terdahulu dalam permutasi data",
-        "P": "prior global rata-rata nilai target",
-        "a": "bobot prioritas penghalusan (a = 1)"
-    }
+    param_list=[
+        (r"\hat{x}_k", "nilai numerik terproses dari fitur kategori;"),
+        (r"\sum y_{\text{historis}}", "akumulasi nilai target pada kemunculan kategori yang sama pada data terdahulu;"),
+        (r"\text{Count}_{\text{historis}}", "frekuensi kemunculan kategori serupa terdahulu dalam permutasi data;"),
+        (r"P", "prior global rata-rata nilai target;"),
+        (r"a", "bobot prioritas penghalusan (a = 1).")
+    ]
 )
 
 add_p(doc,
@@ -394,31 +446,31 @@ add_p(doc,
     "Fungsi objektif kerugian CatBoost yang dioptimalkan dirumuskan pada Persamaan (2.7):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="L_CatBoost = - (1 / N) * ∑_{i=1}^N ∑_{c=1}^K w_c · y_{i,c} · ln [ exp(F_c(x_i)) / ∑_{j=1}^K exp(F_j(x_i)) ]",
+    latex_code=r"\mathcal{L}_{\text{CatBoost}} = - \frac{1}{N} \sum_{i=1}^N \sum_{c=1}^K w_c \cdot y_{i,c} \cdot \ln \left[ \frac{\exp(F_c(x_i))}{\sum_{j=1}^K \exp(F_j(x_i))} \right]",
     eq_num="Persamaan 2.7",
-    param_dict={
-        "L_CatBoost": "fungsi kerugian cross-entropy terbobot yang diminimalkan oleh algoritma",
-        "w_c": "bobot penalti kelas cost-sensitive untuk kelas c sesuai Persamaan (2.5)",
-        "F_c(x_i)": "skor margin luaran mentah (raw logit margin) model ansambel untuk kelas c pada observasi x_i",
-        "K": "jumlah total tingkatan kelas risiko (K = 4)"
-    }
+    param_list=[
+        (r"\mathcal{L}_{\text{CatBoost}}", "fungsi kerugian cross-entropy terbobot yang diminimalkan oleh algoritma;"),
+        (r"w_c", "bobot penalti kelas cost-sensitive untuk kelas c sesuai Persamaan (2.5);"),
+        (r"F_c(x_i)", "skor margin luaran mentah (raw logit margin) model ansambel untuk kelas c pada observasi x_i;"),
+        (r"K", "jumlah total tingkatan kelas risiko (K = 4).")
+    ]
 )
 
 add_p(doc,
     "Pada setiap tahapan boosting ke-t, pohon keputusan baru dilatih untuk memprediksi nilai gradien residual negatif g_{i,c}^t dari fungsi kerugian terhadap skor margin prediksi saat ini, sebagaimana dirumuskan pada Persamaan (2.8):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="g_{i,c}^t = - [ ∂ L(y_i, F^{t-1}(x_i)) / ∂ F_c(x_i) ] = w_c · y_{i,c} - p̂_{i,c}^{t-1} · ∑_{j=1}^K w_j y_{i,j}",
+    latex_code=r"g_{i,c}^t = - \left[ \frac{\partial \mathcal{L}(y_i, F^{t-1}(x_i))}{\partial F_c(x_i)} \right] = w_c \cdot y_{i,c} - \hat{p}_{i,c}^{t-1} \sum_{j=1}^K w_j y_{i,j}",
     eq_num="Persamaan 2.8",
-    param_dict={
-        "g_{i,c}^t": "nilai gradien negatif residual untuk observasi i pada kelas c di iterasi ke-t",
-        "F^{t-1}(x_i)": "skor akumulasi ansambel pohon keputusan hingga iterasi ke-(t-1)",
-        "p̂_{i,c}^{t-1}": "estimasi probabilitas softmax kelas c pada iterasi ke-(t-1)"
-    }
+    param_list=[
+        (r"g_{i,c}^t", "nilai gradien negatif residual untuk observasi i pada kelas c di iterasi ke-t;"),
+        (r"F^{t-1}(x_i)", "skor akumulasi ansambel pohon keputusan hingga iterasi ke-(t-1);"),
+        (r"\hat{p}_{i,c}^{t-1}", "estimasi probabilitas softmax kelas c pada iterasi ke-(t-1).")
+    ]
 )
 
 add_p(doc,
@@ -427,34 +479,34 @@ add_p(doc,
     "Setelah struktur cabang pohon oblivious terbentuk, nilai keluaran daun (leaf value) γ_{J, c}^t untuk setiap wilayah simpul daun J dihitung dengan menyertakan parameter regularisasi L2 (l2_leaf_reg = 3) guna mencegah lonjakan bobot ekstrem, sebagaimana dirumuskan pada Persamaan (2.9):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="γ_{J, c}^t = [ ∑_{i ∈ R_J} g_{i,c}^t ] / [ ∑_{i ∈ R_J} h_{i,c}^t + λ ]",
+    latex_code=r"\gamma_{J, c}^t = \frac{\sum_{i \in R_J} g_{i,c}^t}{\sum_{i \in R_J} h_{i,c}^t + \lambda}",
     eq_num="Persamaan 2.9",
-    param_dict={
-        "γ_{J, c}^t": "nilai penyesuaian bobot prediksi optimal pada daun simetris J untuk kelas c",
-        "R_J": "himpunan sampel observasi data latih yang terpartisi masuk ke dalam daun simetris J",
-        "g_{i,c}^t": "nilai gradien residual orde pertama sesuai Persamaan (2.8)",
-        "h_{i,c}^t": "nilai turunan kedua (Hessian matrix) dari fungsi kerugian",
-        "λ": "koefisien regularisasi L2 daun (l2_leaf_reg, dikonfigurasi sebesar 3.0)"
-    }
+    param_list=[
+        (r"\gamma_{J, c}^t", "nilai penyesuaian bobot prediksi optimal pada daun simetris J untuk kelas c;"),
+        (r"R_J", "himpunan sampel observasi data latih yang terpartisi masuk ke dalam daun simetris J;"),
+        (r"g_{i,c}^t", "nilai gradien residual orde pertama sesuai Persamaan (2.8);"),
+        (r"h_{i,c}^t", "nilai turunan kedua (Hessian matrix) dari fungsi kerugian;"),
+        (r"\lambda", "koefisien regularisasi L2 daun (l2_leaf_reg, dikonfigurasi sebesar 3.0).")
+    ]
 )
 
 add_p(doc,
     "Selanjutnya, skor margin prediksi akhir model ansambel untuk setiap kelas risiko c diakumulasikan secara bertahap dari iterasi t = 1 hingga iterasi maksimum T = 1.000 dengan dikalikan laju pembelajaran (learning rate η = 0,05), sebagaimana dinyatakan pada Persamaan (2.10):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="F_c^T(x) = F_c^0(x) + ∑_{t=1}^T η · h_t(x; Θ_{t,c})",
+    latex_code=r"F_c^T(x) = F_c^0(x) + \sum_{t=1}^T \eta \cdot h_t(x; \Theta_{t,c})",
     eq_num="Persamaan 2.10",
-    param_dict={
-        "F_c^T(x)": "total skor margin prediksi mentah model ansambel untuk kelas c pada input x",
-        "F_c^0(x)": "skor inisialisasi awal model (bias dasar)",
-        "T": "jumlah total iterasi pohon keputusan (iterations = 1.000)",
-        "η": "laju pembelajaran (learning rate = 0,05)",
-        "h_t(x; Θ_{t,c})": "fungsi prediksi pohon simetris oblivious ke-t dengan parameter struktur Θ_{t,c}"
-    }
+    param_list=[
+        (r"F_c^T(x)", "total skor margin prediksi mentah model ansambel untuk kelas c pada input x;"),
+        (r"F_c^0(x)", "skor inisialisasi awal model (bias dasar);"),
+        (r"T", "jumlah total iterasi pohon keputusan (iterations = 1.000);"),
+        (r"\eta", "laju pembelajaran (learning rate = 0,05);"),
+        (r"h_t(x; \Theta_{t,c})", "fungsi prediksi pohon simetris oblivious ke-t dengan parameter struktur Θ_{t,c}.")
+    ]
 )
 
 # ---------------------------------------------------------------------------
@@ -489,19 +541,19 @@ add_p(doc,
     "Formulasi matematis klasik dari nilai Shapley didefinisikan pada Persamaan (2.11):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="φ_i(f, x) = ∑_{S ⊆ F \\ {i}} [ |S|! (|F| - |S| - 1)! / |F|! ] * [ f_x(S ∪ {i}) - f_x(S) ]",
+    latex_code=r"\phi_i(f, x) = \sum_{S \subseteq F \setminus \{i\}} \frac{|S|!(|F| - |S| - 1)!}{|F|!} [f_x(S \cup \{i\}) - f_x(S)]",
     eq_num="Persamaan 2.11",
-    param_dict={
-        "φ_i(f, x)": "nilai atribusi kontribusi marginal fitur prediktor ke-i terhadap prediksi model pada instans x",
-        "F": "himpunan seluruh variabel fitur input yang digunakan dalam model (|F| = M = 28 fitur prediktor)",
-        "S": "himpunan bagian (koalisi) fitur yang tidak memuat fitur ke-i (S ⊆ F \\ {i})",
-        "|S|": "kardinalitas atau jumlah fitur yang tergabung dalam koalisi subset S",
-        "|F|!": "total permutasi kemungkinan urutan masuknya seluruh fitur ke dalam koalisi",
-        "f_x(S)": "nilai ekspektasi luaran prediksi model saat dievaluasi menggunakan subset fitur S",
-        "[f_x(S ∪ {i}) - f_x(S)]": "kontribusi marginal penambahan fitur ke-i ke dalam koalisi fitur S"
-    }
+    param_list=[
+        (r"\phi_i(f, x)", "nilai atribusi kontribusi marginal fitur prediktor ke-i terhadap keputusan model pada instans x;"),
+        (r"F", "himpunan seluruh variabel fitur input yang digunakan model (|F| = M = 28 fitur);"),
+        (r"S", "himpunan bagian (koalisi) fitur yang tidak memuat fitur ke-i (S ⊆ F \\ {i});"),
+        (r"|S|", "kardinalitas atau jumlah anggota fitur dalam koalisi subset S;"),
+        (r"|F|!", "total permutasi urutan kemungkinan masuknya seluruh fitur ke dalam koalisi;"),
+        (r"f_x(S)", "nilai ekspektasi luaran model saat dievaluasi hanya menggunakan subset fitur S;"),
+        (r"[f_x(S \cup \{i\}) - f_x(S)]", "kontribusi marginal penambahan fitur ke-i ke dalam koalisi S.")
+    ]
 )
 
 add_p(doc,
@@ -513,15 +565,15 @@ add_p(doc,
     bold_prefix="1. Aksioma Efisiensi (Efficiency): "
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="∑_{i=1}^M φ_i(f, x) = f(x) - E[f(X)]",
+    latex_code=r"\sum_{i=1}^M \phi_i(f, x) = f(x) - \mathbb{E}[f(X)]",
     eq_num="Persamaan 2.12",
-    param_dict={
-        "∑ φ_i": "akumulasi nilai kontribusi marginal seluruh M variabel fitur prediktor (M = 28)",
-        "f(x)": "nilai prediksi akhir model untuk observasi x (pada ruang margin logit atau probabilitas)",
-        "E[f(X)]": "nilai dasar acuan ekspektasi global model (base value φ_0) pada seluruh populasi data latih"
-    }
+    param_list=[
+        (r"\sum_{i=1}^M \phi_i", "akumulasi nilai kontribusi marginal seluruh M variabel fitur prediktor (M = 28);"),
+        (r"f(x)", "nilai prediksi akhir model untuk observasi x (pada ruang margin logit atau probabilitas);"),
+        (r"\mathbb{E}[f(X)]", "nilai dasar acuan ekspektasi global model (base value φ_0) pada populasi data latih.")
+    ]
 )
 
 add_p(doc,
@@ -543,16 +595,16 @@ add_p(doc,
     "Berdasarkan pemenuhan keempat aksioma tersebut, Lundberg & Lee (2017) merumuskan kerangka kerja model atribusi aditif lokal (Additive Feature Attribution Method) yang menjamin representasi linear yang intuitif bagi pengguna, sebagaimana dinyatakan pada Persamaan (2.13):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="g(z') = φ_0 + ∑_{i=1}^M φ_i · z'_i    ==>    f(x) = φ_0 + ∑_{i=1}^M φ_i(x)",
+    latex_code=r"g(z') = \phi_0 + \sum_{i=1}^M \phi_i \cdot z'_i \quad \Longrightarrow \quad f(x) = \phi_0 + \sum_{i=1}^M \phi_i(x)",
     eq_num="Persamaan 2.13",
-    param_dict={
-        "g(z')": "model penjelasan lokal linear yang mengaproksimasi perilaku model kompleks di sekitar instans x",
-        "z' ∈ {0, 1}^M": "vektor biner koalisi fitur sederhana (z'_i = 1 jika fitur diobservasi, dan 0 jika tidak ada)",
-        "φ_0": "nilai dasar acuan ekspektasi model saat tidak ada fitur yang diketahui (φ_0 = f_x(∅) = E[f(x)])",
-        "φ_i(x)": "nilai atribusi kontribusi lokal dari variabel ke-i pada instans pasien x"
-    }
+    param_list=[
+        (r"g(z')", "model penjelasan lokal linear yang mengaproksimasi perilaku model di sekitar instans x;"),
+        (r"z' \in \{0, 1\}^M", "vektor biner koalisi fitur (z'_i = 1 jika fitur diobservasi, dan 0 jika tidak ada);"),
+        (r"\phi_0", "nilai dasar acuan ekspektasi model saat tidak ada fitur yang diketahui (φ_0 = f_x(∅) = E[f(x)]);"),
+        (r"\phi_i(x)", "nilai atribusi kontribusi lokal dari variabel ke-i pada instans pasien x.")
+    ]
 )
 
 add_p(doc,
@@ -562,16 +614,16 @@ add_p(doc,
     "Nilai Tree-SHAP untuk setiap pohon ke-t dihitung dengan menjumlahkan kontribusi terbobot dari seluruh simpul daun, sebagaimana dirumuskan pada Persamaan (2.14):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="φ_i(f_t, x) = ∑_{j ∈ Daun(f_t)} W(j, i, x) · v_j",
+    latex_code=r"\phi_i(f_t, x) = \sum_{j \in \text{Daun}(f_t)} W(j, i, x) \cdot v_j",
     eq_num="Persamaan 2.14",
-    param_dict={
-        "φ_i(f_t, x)": "atribusi fitur ke-i pada pohon keputusan tunggal ke-t",
-        "Daun(f_t)": "himpunan seluruh simpul daun pada pohon keputusan ke-t",
-        "v_j": "nilai bobot prediksi yang tersimpan pada simpul daun j",
-        "W(j, i, x)": "fungsi bobot proporsional fraksi jalur keputusan yang bergantung pada fitur i sesuai topologi pohon"
-    }
+    param_list=[
+        (r"\phi_i(f_t, x)", "atribusi kontribusi fitur ke-i pada pohon keputusan tunggal ke-t;"),
+        (r"\text{Daun}(f_t)", "himpunan seluruh simpul daun pada pohon keputusan ke-t;"),
+        (r"v_j", "nilai bobot prediksi numerik yang tersimpan pada simpul daun j;"),
+        (r"W(j, i, x)", "fungsi bobot proporsional fraksi jalur keputusan yang bergantung pada fitur i sesuai topologi pohon.")
+    ]
 )
 
 add_p(doc,
@@ -579,16 +631,16 @@ add_p(doc,
     "Guna keperluan interpretasi klinis yang intuitif bagi dokter pada antarmuka sistem pendukung keputusan klinis (CDSS), margin logit terdekomposisi tersebut ditranslasikan ke dalam ruang probabilitas terkalibrasi melalui fungsi Softmax, sebagaimana dirumuskan pada Persamaan (2.15):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="P(Risiko = c | x) = exp(φ_0^{(c)} + ∑_{i=1}^M φ_i^{(c)}(x)) / ∑_{k=1}^K exp(φ_0^{(k)} + ∑_{i=1}^M φ_i^{(k)}(x))",
+    latex_code=r"P(\text{Risiko} = c \mid x) = \frac{\exp\left(\phi_0^{(c)} + \sum_{i=1}^M \phi_i^{(c)}(x)\right)}{\sum_{k=1}^K \exp\left(\phi_0^{(k)} + \sum_{i=1}^M \phi_i^{(k)}(x)\right)}",
     eq_num="Persamaan 2.15",
-    param_dict={
-        "P(Risiko = c | x)": "probabilitas terkalibrasi bahwa pasien x berada pada tingkatan risiko c (0% hingga 100%)",
-        "φ_0^{(c)}": "nilai dasar margin logit untuk kelas c",
-        "φ_i^{(c)}(x)": "nilai atribusi Tree-SHAP dari fitur prediktor ke-i terhadap kelas risiko c",
-        "K": "jumlah total kelas risiko target (K = 4: Healthy, Mild, Moderate, Severe)"
-    }
+    param_list=[
+        (r"P(\text{Risiko} = c \mid x)", "probabilitas terkalibrasi bahwa pasien x berada pada tingkatan risiko c (0% hingga 100%);"),
+        (r"\phi_0^{(c)}", "nilai dasar margin logit ekspektasi untuk kelas c;"),
+        (r"\phi_i^{(c)}(x)", "nilai atribusi Tree-SHAP dari fitur prediktor ke-i terhadap kelas risiko c;"),
+        (r"K", "jumlah total tingkatan kelas risiko target (K = 4: Healthy, Mild, Moderate, Severe).")
+    ]
 )
 
 add_p(doc,
@@ -596,15 +648,15 @@ add_p(doc,
     "Nilai kepentingan global I_i dihitung dengan merata-ratakan magnitudo nilai absolut SHAP dari fitur ke-i di seluruh N_test sampel data uji, sebagaimana dirumuskan pada Persamaan (2.16):"
 )
 
-add_equation_block(
+add_native_equation_block(
     doc,
-    eq_text="I_i = (1 / N_test) * ∑_{k=1}^{N_test} |φ_i(x_k)|",
+    latex_code=r"I_i = \frac{1}{N_{\text{test}}} \sum_{k=1}^{N_{\text{test}}} |\phi_i(x_k)|",
     eq_num="Persamaan 2.16",
-    param_dict={
-        "I_i": "skor kepentingan global variabel ke-i pada populasi data uji",
-        "N_test": "jumlah total sampel data uji yang dievaluasi (N_test = 20.000 sampel)",
-        "|φ_i(x_k)|": "magnitudo nilai kontribusi absolut fitur ke-i pada sampel pasien ke-k"
-    }
+    param_list=[
+        (r"I_i", "skor kepentingan global variabel ke-i pada populasi data uji;"),
+        (r"N_{\text{test}}", "jumlah total sampel data uji yang dievaluasi (N_test = 20.000 sampel);"),
+        (r"|\phi_i(x_k)|", "magnitudo nilai kontribusi absolut fitur ke-i pada sampel pasien ke-k.")
+    ]
 )
 
 add_p(doc,
@@ -651,7 +703,6 @@ r_cap.font.name = 'Times New Roman'
 r_cap.font.size = Pt(11)
 r_cap.font.bold = True
 
-# Load SOTA data
 if os.path.exists(SOTA_JSON):
     with open(SOTA_JSON, 'r', encoding='utf-8') as f_sota:
         sota_data = json.load(f_sota)
@@ -677,7 +728,6 @@ if os.path.exists(SOTA_JSON):
             c_p.paragraph_format.space_after = Pt(2)
             c_p.alignment = WD_ALIGN_PARAGRAPH.CENTER if (is_hdr or c_idx == 0) else WD_ALIGN_PARAGRAPH.LEFT
             
-            # Text correction if any
             display_val = val.replace("Xie et al. (2026)", "Xie et al. (2025)")
             
             r_run = c_p.add_run(display_val)
@@ -685,7 +735,6 @@ if os.path.exists(SOTA_JSON):
             r_run.font.size = Pt(8.5) if is_hdr else Pt(8.0)
             if is_hdr:
                 r_run.font.bold = True
-                # Shading for header
                 shd = parse_xml(r'<w:shd {} w:fill="F1F5F9"/>'.format(nsdecls('w')))
                 c_obj._tc.get_or_add_tcPr().append(shd)
 
@@ -741,22 +790,42 @@ add_p(doc,
 )
 
 # ---------------------------------------------------------------------------
-# Save Document to TARGET_DOCX and ROOT_COPY
+# Save Document
 # ---------------------------------------------------------------------------
 os.makedirs(OUT_DIR, exist_ok=True)
-doc.save(TARGET_DOCX)
-print(f"[SUCCESS] Saved standalone file to: {TARGET_DOCX}")
+ALT_TARGET = os.path.join(OUT_DIR, "BAB_2_REVISI_RUMUS_RAPI.docx")
+ALT_ROOT = r"c:\Users\ahmad\OneDrive\ドキュメント\skripsi\BAB_2_REVISI_RUMUS_RAPI.docx"
+
+# Always save to the non-locked new version first
+doc.save(ALT_TARGET)
+print(f"[SUCCESS] Saved formatted file to: {ALT_TARGET}")
 
 try:
-    shutil.copy2(TARGET_DOCX, ROOT_COPY)
-    print(f"[SUCCESS] Copied to workspace root: {ROOT_COPY}")
+    shutil.copy2(ALT_TARGET, ALT_ROOT)
+    print(f"[SUCCESS] Copied to workspace root: {ALT_ROOT}")
 except Exception as e:
     print(f"[WARN] Root copy warning: {e}")
 
-MASTER_DIR = r"c:\Users\ahmad\OneDrive\ドキュメント\skripsi\01_Naskah_Proposal_Master"
-PROPOSAL_BAB2_COPY = os.path.join(MASTER_DIR, "BAB 2.docx")
+# Try overwriting the original BAB 2.docx if user closed it
 try:
-    shutil.copy2(TARGET_DOCX, PROPOSAL_BAB2_COPY)
+    doc.save(TARGET_DOCX)
+    print(f"[SUCCESS] Saved standalone file to: {TARGET_DOCX}")
+except PermissionError:
+    print(f"[NOTICE] {TARGET_DOCX} is currently OPEN in Microsoft Word. Saved as {ALT_TARGET} instead.")
+
+try:
+    shutil.copy2(ALT_TARGET, ROOT_COPY)
+    print(f"[SUCCESS] Copied to workspace root: {ROOT_COPY}")
+except PermissionError:
+    print(f"[NOTICE] {ROOT_COPY} is currently OPEN in Microsoft Word. Accessible via {ALT_ROOT}.")
+except Exception as e:
+    print(f"[WARN] Root copy warning: {e}")
+
+try:
+    shutil.copy2(ALT_TARGET, PROPOSAL_BAB2_COPY)
     print(f"[SUCCESS] Copied to proposal master folder: {PROPOSAL_BAB2_COPY}")
+except PermissionError:
+    print(f"[NOTICE] {PROPOSAL_BAB2_COPY} is currently OPEN in Microsoft Word.")
 except Exception as e:
     print(f"[WARN] Master folder copy warning: {e}")
+
