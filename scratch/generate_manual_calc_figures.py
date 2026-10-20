@@ -81,10 +81,10 @@ def create_manual_calc_flow_figure():
             "border": "#6366F1", "fill": "#F8FAFC", "header_bg": "#4338CA",
             "items": [
                 "• Rekapitulasi matriks 4x4 pada 20.000 data uji",
-                "• Recall Severe: 724 / (724 + 89) = 89,05%",
-                "• Precision Severe: 724 / (724 + 170) = 80,98%",
-                "• F1-Score Severe: 2·(P·R)/(P+R) = 84,83%",
-                "• Macro F1-Score: Rata-rata 4 kelas = 89,25%"
+                "• Recall Severe: 734 / (734 + 79) = 90,28%",
+                "• Precision Severe: 734 / (734 + 173) = 80,93%",
+                "• F1-Score Severe: 2·(P·R)/(P+R) = 85,35%",
+                "• Macro F1-Score: Rata-rata 4 kelas = 88,06%"
             ]
         },
         {
@@ -217,10 +217,10 @@ def create_weights_and_confusion_matrix_figure():
     # Panel B: Multi-Class Confusion Matrix Heatmap (20.000 Data Uji)
     ax2.set_facecolor('#FFFFFF')
     cm = np.array([
-        [10723,   108,     0,     0],
-        [  536,  6160,     0,     0],
-        [    0,   232,  1428,     0],
-        [    0,     0,    89,   724]
+        [10549,   282,     0,     0],
+        [   52,  6084,   560,     0],
+        [    0,    82,  1405,   173],
+        [    0,     0,    79,   734]
     ])
 
     im = ax2.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
@@ -250,8 +250,8 @@ def create_weights_and_confusion_matrix_figure():
     # Highlight Severe row
     rect = patches.Rectangle((-0.45, 2.55), 3.9, 0.9, linewidth=2.2, edgecolor='#DC2626', facecolor='none', zorder=5)
     ax2.add_patch(rect)
-    ax2.text(1.5, 3.8, "Recall Severe = 724 / (724 + 89) = 89,05% (724 Pasien Terdeteksi)", 
-             fontsize=9.5, fontweight='bold', color="#DC2626", ha='center',
+    ax2.text(1.5, 3.8, "Recall Severe = 734 / (734 + 79) = 90,28% | Prec = 734 / 907 = 80,93% (F1 = 85,35%)", 
+             fontsize=8.8, fontweight='bold', color="#DC2626", ha='center',
              bbox=dict(boxstyle="round,pad=0.3", facecolor="#FEF2F2", edgecolor="#EF4444", lw=1))
 
     plt.tight_layout()

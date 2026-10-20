@@ -162,7 +162,8 @@ def create_crisp_dm_figure():
     # Feedback Loops
     ax.annotate("", xy=(10.05, 3.4), xytext=(9.6, 3.4),
                 arrowprops=dict(arrowstyle="-|>", color="#DC2626", lw=1.8, linestyle="--", mutation_scale=15))
-    ax.text(9.82, 3.65, "Tuning Ulang", ha='center', va='bottom', fontsize=8.5, color="#DC2626", fontweight='bold')
+    ax.text(9.825, 3.85, "Tuning\nUlang", ha='center', va='center', fontsize=7.8, fontweight='bold', color="#DC2626",
+            bbox=dict(boxstyle="round,pad=0.25", facecolor="#FEF2F2", edgecolor="#EF4444", lw=0.8, alpha=0.95), zorder=6)
 
     ax.plot([7.5, 7.5, 2.85, 2.85], [0.95, 0.45, 0.45, 0.95], color="#B45309", lw=1.6, linestyle=":")
     ax.annotate("", xy=(2.85, 0.95), xytext=(2.85, 0.7),
@@ -427,9 +428,9 @@ def create_cdss_mockup():
         ("stress_score = 8", "+0.16", 0.16, True),
         ("sleep_latency_mins = 45", "+0.11", 0.11, True),
         ("sleep_duration_hrs = 5.2", "+0.07", 0.07, True),
-        ("exercise_day = 1 (Minim)", "+0.04", 0.04, True),
+        ("alcohol_units_before_bed = 2", "+0.04", 0.04, True),
         ("steps_that_day = 3200", "-0.05", 0.05, False),
-        ("age = 24 (Faktor Usia)", "-0.12", 0.12, False)
+        ("21 Fitur Penekan Lainnya", "-0.12", 0.12, False)
     ]
 
     sy = 0.64
